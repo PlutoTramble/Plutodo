@@ -6,7 +6,7 @@ import 'package:plutodo_client/interfaces/task/category/category_interface.dart'
 import 'package:plutodo_client/interfaces/task/detail/task_detail_interface.dart';
 import 'package:plutodo_client/interfaces/task/detail/detail_interface_state.dart';
 import 'package:plutodo_client/interfaces/task/detail/task_state.dart';
-import 'package:plutodo_client/interfaces/task/task_interface.dart';
+import 'package:plutodo_client/interfaces/task/tasklist_interface.dart';
 import 'package:plutodo_client/models/task.dart';
 import 'package:plutodo_client/services/task_service.dart';
 
@@ -21,7 +21,7 @@ class MainTaskInterface extends StatefulWidget {
 
 class _MainTaskInterface extends State<MainTaskInterface> {
   late CategoryInterface categoryInterface;
-  late TaskInterface taskInterface;
+  late TaskListInterface taskInterface;
   late TaskDetailInterface? taskDetailInterface;
 
   late ValueListenable<TaskState>? taskState;
@@ -51,8 +51,23 @@ class _MainTaskInterface extends State<MainTaskInterface> {
 
   void selectTask() {
     if(taskInterface.selectedTask.value != null){
+      if(isMobile()){
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) =>
+                TaskDetailInterface(
+                  selectedTask: taskInterface.selectedTask,
+                  isMobile: true,
+                )
+            )
+        );
+        return;
+      }
+
       taskDetailInterface =
-          TaskDetailInterface(selectedTask: taskInterface.selectedTask);
+          TaskDetailInterface(
+            selectedTask: taskInterface.selectedTask,
+            isMobile: false,
+          );
 
       taskState = taskDetailInterface!.taskDetailState;
 
@@ -87,13 +102,18 @@ class _MainTaskInterface extends State<MainTaskInterface> {
     });
   }
 
+  bool isMobile(){
+    MediaQueryData mediaQuery = MediaQuery.of(context);
+    return mediaQuery.size.width < 1070;
+  }
+
   @override
   void initState() {
     super.initState();
     categoryInterface = CategoryInterface();
 
     taskInterface =
-        TaskInterface(selectedCategoryId: categoryInterface.selectedCategoryId);
+        TaskListInterface(selectedCategoryId: categoryInterface.selectedCategoryId);
 
     taskInterface.selectedTask.addListener(() {
       selectTask();

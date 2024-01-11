@@ -5,18 +5,18 @@ import 'package:plutodo_client/injection.dart';
 import 'package:plutodo_client/models/task.dart';
 import 'package:plutodo_client/services/task_service.dart';
 
-class TaskInterface extends StatefulWidget {
-  TaskInterface({super.key, required this.selectedCategoryId}) {}
+class TaskListInterface extends StatefulWidget {
+  TaskListInterface({super.key, required this.selectedCategoryId}) {}
   final TaskService _taskService = getIt<TaskService>();
 
   final ValueListenable<int> selectedCategoryId;
   final ValueNotifier<Task?> selectedTask = ValueNotifier<Task?>(null);
 
   @override
-  State<TaskInterface> createState() => _TaskInterface();
+  State<TaskListInterface> createState() => _TaskListInterface();
 }
 
-class _TaskInterface extends State<TaskInterface> {
+class _TaskListInterface extends State<TaskListInterface> {
   List<Task> _tasks = [];
   bool isRealCategory = true;
 

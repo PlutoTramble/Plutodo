@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:plutodo_client/injection.dart';
 import 'package:plutodo_client/interfaces/authentication/login_interface.dart';
 import 'package:plutodo_client/interfaces/authentication/register_interface.dart';
+import 'package:plutodo_client/interfaces/task/category/category_interface.dart';
 import 'package:plutodo_client/interfaces/task/main_task_interface.dart';
+import 'package:plutodo_client/interfaces/task/tasklist_interface.dart';
 import 'package:plutodo_client/services/authentication_service.dart';
 
 void main() {

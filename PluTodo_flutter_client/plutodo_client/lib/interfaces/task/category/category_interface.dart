@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:plutodo_client/injection.dart';
 import 'package:plutodo_client/interfaces/task/category/category_dialog.dart';
+import 'package:plutodo_client/interfaces/task/tasklist_interface.dart';
 import 'package:plutodo_client/models/category.dart';
 import 'package:plutodo_client/services/task_service.dart';
 
@@ -95,7 +96,7 @@ class _CategoyInterface extends State<CategoryInterface> {
     ];
   }
 
-  Future<void> _getAllCat() async {
+  Future<void> _getAllCategories() async {
     _addBasicCategoriesToList();
     _categories.addAll(await widget._taskService.getAllCategories());
 
@@ -103,112 +104,115 @@ class _CategoyInterface extends State<CategoryInterface> {
       _categories;
     });
   }
+  
+  void _editCategory(Category? category) {
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) =>
+            CategoryDialog(
+              category: category ?? selectedCategory,
+              ordering: selectedCategory!.ordering,
+            )
+    ).then((value) {
+      if(value != "Cancel" && value != "Delete") {
+        _handleModifiedCategory(json.decode(value!), true);
+      }
+      else if(value == "Delete") {
+        _deleteSelectedCategory();
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    _getAllCat();
+    _getAllCategories();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.zero,
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.zero
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.zero,
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.zero
+          ),
         ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-              height: 70,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  OutlinedButton(
-                    onPressed: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          CategoryDialog(ordering: _categories.length + 1,)
-                    ).then((value) {
-                      if(value != "Cancel") {
-                        _handleModifiedCategory(json.decode(value!), true);
-                      }
-                    }),
-                    child: const Text(
-                      "Add new\ncategory",
-                      textAlign: TextAlign.center,
-                      textScaler: TextScaler.linear(1.2),
-                    ),
-                  ),
-
-                  OutlinedButton(
-                    onPressed: () => selectedCategory != null
-                        ? showDialog<String>(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                height: 70,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () => showDialog<String>(
                           context: context,
                           builder: (BuildContext context) =>
-                              CategoryDialog(
-                                category: selectedCategory,
-                                ordering: selectedCategory!.ordering,
-                              )
+                              CategoryDialog(ordering: _categories.length + 1,)
                       ).then((value) {
-                      if(value != "Cancel" && value != "Delete") {
-                        _handleModifiedCategory(json.decode(value!), true);
-                      }
-                      else if(value == "Delete") {
-                        _deleteSelectedCategory();
-                      }
-                    }) : null,
-                    child: const Text(
-                      "Edit selected\ncategory",
-                      textAlign: TextAlign.center,
-                      textScaler: TextScaler.linear(1.2),
+                        if(value != "Cancel") {
+                          _handleModifiedCategory(json.decode(value!), true);
+                        }
+                      }),
+                      child: const Text(
+                        "Add new\ncategory",
+                        textAlign: TextAlign.center,
+                        textScaler: TextScaler.linear(1.2),
+                      ),
                     ),
-                  ),
 
-                ],
-              )
-          ),
+                    OutlinedButton(
+                      onPressed: () => selectedCategory != null
+                          ? _editCategory(null) : null,
+                      child: const Text(
+                        "Edit selected\ncategory",
+                        textAlign: TextAlign.center,
+                        textScaler: TextScaler.linear(1.2),
+                      ),
+                    ),
 
-          Expanded(
-            flex: 1,
-            child: ListView.builder(
-              itemCount: _categories.length,
-              itemBuilder: (context, index) => InkWell(
-                onTap: () => _selectCategory(index),
-                child: Container(
-                  width: double.infinity,
-                  height: 60,
-                  margin: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: !_categories[index].selected
-                        ? Theme.of(context).colorScheme.inversePrimary
-                        : Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
+                  ],
+                )
+            ),
+
+            Expanded(
+              child: ListView.builder(
+                itemCount: _categories.length,
+                itemBuilder: (context, index) => InkWell(
+                  onTap: () => _selectCategory(index),
+                  onLongPress: () => _editCategory(_categories[index]),
+                  child: Container(
+                    width: double.infinity,
+                    height: 60,
+                    margin: const EdgeInsets.all(10),
                     padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: !_categories[index].selected
+                          ? Theme.of(context).colorScheme.inversePrimary
+                          : Theme.of(context).colorScheme.primary,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     child: Row(
                       children: [
 
                         Expanded(
                           child: Text(
                             _categories[index].name,
-                            textScaleFactor: 1.2,
+                            textScaler: const TextScaler.linear(1.2),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: !_categories[index].selected
-                                    ? Theme.of(context).colorScheme.surface
-                                    : Theme.of(context).colorScheme.inversePrimary,
+                              fontWeight: FontWeight.bold,
+                              color: !_categories[index].selected
+                                  ? Theme.of(context).colorScheme.surface
+                                  : Theme.of(context).colorScheme.inversePrimary,
                             ),
                           ),
                         ),
@@ -219,9 +223,9 @@ class _CategoyInterface extends State<CategoryInterface> {
                 ),
               ),
             ),
-          ),
 
-        ],
+          ],
+        ),
       ),
     );
   }

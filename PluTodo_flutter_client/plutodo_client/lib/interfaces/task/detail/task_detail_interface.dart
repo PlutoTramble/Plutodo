@@ -5,11 +5,13 @@ import 'package:plutodo_client/interfaces/task/detail/task_state.dart';
 import 'package:plutodo_client/models/task.dart';
 import 'package:intl/intl.dart';
 class TaskDetailInterface extends StatefulWidget {
-  TaskDetailInterface({super.key, required this.selectedTask}) {}
+  TaskDetailInterface({super.key, required this.selectedTask, required this.isMobile}) {}
 
   final ValueListenable<Task?> selectedTask;
   final ValueNotifier<TaskState> taskDetailState =
     ValueNotifier<TaskState>(TaskState(DetailInterfaceState.opened, null));
+
+  final bool isMobile;
 
   @override
   State<TaskDetailInterface> createState() => _TaskDetailInterface();
@@ -62,6 +64,10 @@ class _TaskDetailInterface extends State<TaskDetailInterface> {
     }
     widget.taskDetailState.value =
         TaskState(state, includeTask ? _task : null);
+
+    if(widget.isMobile){
+      Navigator.pop(context);
+    }
   }
 
   @override
