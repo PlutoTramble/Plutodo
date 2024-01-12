@@ -149,7 +149,7 @@ class _CategoyInterface extends State<CategoryInterface> {
                 padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
                 height: 70,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     TextButton(
                       onPressed: () => showDialog<String>(
@@ -170,7 +170,7 @@ class _CategoyInterface extends State<CategoryInterface> {
 
 
                     if(!widget._taskService.isMobile(context))
-                      OutlinedButton(
+                      TextButton(
                         onPressed: () => selectedCategory != null
                             ? _editCategory(null) : null,
                         child: const Text(
@@ -211,7 +211,7 @@ class _CategoyInterface extends State<CategoryInterface> {
                         Expanded(
                           child: Text(
                             _categories[index].name,
-                            textScaler: const TextScaler.linear(1),
+                            textScaler: const TextScaler.linear(1.2),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,

@@ -42,10 +42,10 @@ class _MainTaskInterface extends State<MainTaskInterface> {
           .editTask(oldTask);
     }
 
-    deselectTask();
+    _deselectTask();
   }
 
-  void deselectTask() {
+  void _deselectTask() {
     taskInterface.selectedTask.value = null;
   }
 
@@ -62,15 +62,15 @@ class _MainTaskInterface extends State<MainTaskInterface> {
       taskState!.addListener(() {
         switch(taskState!.value.detailInterfaceState) {
           case(DetailInterfaceState.closed) :
-            deselectTask();
+            _deselectTask();
             break;
           case(DetailInterfaceState.modified) :
             _handleModifiedTask(taskState!.value.task!, false);
-            deselectTask();
+            _deselectTask();
             break;
           case(DetailInterfaceState.newAddition) :
             _handleModifiedTask(taskState!.value.task!, true);
-            deselectTask();
+            _deselectTask();
             break;
           default:
         }
