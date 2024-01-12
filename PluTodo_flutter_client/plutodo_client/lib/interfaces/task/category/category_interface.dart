@@ -22,7 +22,6 @@ class CategoryInterface extends StatefulWidget {
 
 class _CategoyInterface extends State<CategoryInterface> {
   late List<Category> _categories = [];
-
   Category? selectedCategory;
 
   void _selectCategory(int index) {
@@ -125,8 +124,8 @@ class _CategoyInterface extends State<CategoryInterface> {
 
   @override
   void initState() {
-    super.initState();
     _getAllCategories();
+    super.initState();
   }
 
   @override
@@ -147,12 +146,12 @@ class _CategoyInterface extends State<CategoryInterface> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
                 height: 70,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    OutlinedButton(
+                    TextButton(
                       onPressed: () => showDialog<String>(
                           context: context,
                           builder: (BuildContext context) =>
@@ -165,19 +164,22 @@ class _CategoyInterface extends State<CategoryInterface> {
                       child: const Text(
                         "Add new\ncategory",
                         textAlign: TextAlign.center,
-                        textScaler: TextScaler.linear(1.2),
+                        textScaler: TextScaler.linear(1),
                       ),
                     ),
 
-                    OutlinedButton(
-                      onPressed: () => selectedCategory != null
-                          ? _editCategory(null) : null,
-                      child: const Text(
-                        "Edit selected\ncategory",
-                        textAlign: TextAlign.center,
-                        textScaler: TextScaler.linear(1.2),
+
+                    if(!widget._taskService.isMobile(context))
+                      OutlinedButton(
+                        onPressed: () => selectedCategory != null
+                            ? _editCategory(null) : null,
+                        child: const Text(
+                          "Edit selected\ncategory",
+                          textAlign: TextAlign.center,
+                          textScaler: TextScaler.linear(1),
+                        ),
                       ),
-                    ),
+
 
                   ],
                 )
@@ -188,14 +190,16 @@ class _CategoyInterface extends State<CategoryInterface> {
                 itemCount: _categories.length,
                 itemBuilder: (context, index) => Container(
                   width: double.infinity,
-                  height: 60,
-                  margin: const EdgeInsets.all(10),
-                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  margin: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
                   decoration: BoxDecoration(
                     color: !_categories[index].selected
                         ? Theme.of(context).colorScheme.inversePrimary
                         : Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(10),
+                  ),
+                  constraints: const BoxConstraints(
+                    minHeight: 60,
                   ),
 
                   child: InkWell(
@@ -207,7 +211,7 @@ class _CategoyInterface extends State<CategoryInterface> {
                         Expanded(
                           child: Text(
                             _categories[index].name,
-                            textScaler: const TextScaler.linear(1.2),
+                            textScaler: const TextScaler.linear(1),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
