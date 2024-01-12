@@ -19,7 +19,7 @@ class TaskListInterface extends StatefulWidget {
 
 class _TaskListInterface extends State<TaskListInterface> {
   List<Task> _tasks = [];
-  bool isRealCategory = true;
+  bool isRealCategory = false;
 
   Future<void> getFromCategory() async {
     isRealCategory = true;
@@ -213,9 +213,9 @@ class _TaskListInterface extends State<TaskListInterface> {
                 ElevatedButton(
                   onPressed: () => isRealCategory ? setupNewTask() : null,
                   child: const Text(
-                    "Add\nnew task",
+                    "New task",
                     textAlign: TextAlign.center,
-                    textScaler: TextScaler.linear(1.3),
+                    textScaler: TextScaler.linear(1),
                   ),
                 ),
 
@@ -227,7 +227,7 @@ class _TaskListInterface extends State<TaskListInterface> {
                   child: Text(
                     "Delete\nselected task",
                     textAlign: TextAlign.center,
-                    textScaler: const TextScaler.linear(1.3),
+                    textScaler: const TextScaler.linear(1),
                     style: TextStyle(
                       color: Theme.of(context).cardColor
                     ),
