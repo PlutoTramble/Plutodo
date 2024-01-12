@@ -211,7 +211,7 @@ class _TaskListInterface extends State<TaskListInterface> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
-                  onPressed: () => isRealCategory ? setupNewTask() : null,
+                  onPressed: isRealCategory ? () => setupNewTask() : null,
                   child: const Text(
                     "New task",
                     textAlign: TextAlign.center,
@@ -220,9 +220,8 @@ class _TaskListInterface extends State<TaskListInterface> {
                 ),
 
                 OutlinedButton(
-                  onPressed: () =>
-                    widget.selectedTask.value != null
-                      ? _deleteSelectedTask()
+                  onPressed: widget.selectedTask.value != null
+                      ? () => _deleteSelectedTask()
                       : null,
                   child: Text(
                     "Delete\nselected task",

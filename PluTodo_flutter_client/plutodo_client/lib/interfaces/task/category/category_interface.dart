@@ -171,15 +171,15 @@ class _CategoyInterface extends State<CategoryInterface> {
 
                     if(!widget._taskService.isMobile(context))
                       TextButton(
-                        onPressed: () => selectedCategory != null
-                            ? _editCategory(null) : null,
+                        onPressed: selectedCategory != null &&
+                            selectedCategory!.id >= 0 ?
+                        () => _editCategory(null) : null,
                         child: const Text(
                           "Edit selected\ncategory",
                           textAlign: TextAlign.center,
                           textScaler: TextScaler.linear(1),
                         ),
                       ),
-
 
                   ],
                 )
