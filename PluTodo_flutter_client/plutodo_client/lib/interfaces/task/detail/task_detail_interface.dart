@@ -88,7 +88,7 @@ class _TaskDetailInterface extends State<TaskDetailInterface> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      //backgroundColor: Colors.transparent,
       body: widget.selectedTask.value != null ? Container(
         width: double.infinity,
         height: double.infinity,

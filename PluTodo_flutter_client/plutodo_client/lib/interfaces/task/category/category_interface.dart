@@ -186,20 +186,21 @@ class _CategoyInterface extends State<CategoryInterface> {
             Expanded(
               child: ListView.builder(
                 itemCount: _categories.length,
-                itemBuilder: (context, index) => InkWell(
-                  onTap: () => _selectCategory(index),
-                  onLongPress: () => _editCategory(_categories[index]),
-                  child: Container(
-                    width: double.infinity,
-                    height: 60,
-                    margin: const EdgeInsets.all(10),
-                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: !_categories[index].selected
-                          ? Theme.of(context).colorScheme.inversePrimary
-                          : Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                itemBuilder: (context, index) => Container(
+                  width: double.infinity,
+                  height: 60,
+                  margin: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: !_categories[index].selected
+                        ? Theme.of(context).colorScheme.inversePrimary
+                        : Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+
+                  child: InkWell(
+                    onTap: () => _selectCategory(index),
+                    onLongPress: () => _editCategory(_categories[index]),
                     child: Row(
                       children: [
 

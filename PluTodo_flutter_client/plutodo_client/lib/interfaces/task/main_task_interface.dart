@@ -28,10 +28,10 @@ class _MainTaskInterface extends State<MainTaskInterface> {
 
   bool showTaskDetail = false;
 
-  void _handleModifiedTask(Task oldTask, bool newTask) async {
+  void _handleModifiedTask(Task oldTask, bool isNewTask) async {
     Task task;
 
-    if(newTask) {
+    if(isNewTask) {
       task = await widget._taskService
           .addNewTask(oldTask, taskInterface.selectedCategoryId.value);
 
@@ -51,18 +51,6 @@ class _MainTaskInterface extends State<MainTaskInterface> {
 
   void selectTask() {
     if(taskInterface.selectedTask.value != null){
-      if(isMobile()){
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) =>
-                TaskDetailInterface(
-                  selectedTask: taskInterface.selectedTask,
-                  isMobile: true,
-                )
-            )
-        );
-        return;
-      }
-
       taskDetailInterface =
           TaskDetailInterface(
             selectedTask: taskInterface.selectedTask,
@@ -100,11 +88,6 @@ class _MainTaskInterface extends State<MainTaskInterface> {
       showTaskDetail;
       taskDetailInterface?.selectedTask.value;
     });
-  }
-
-  bool isMobile(){
-    MediaQueryData mediaQuery = MediaQuery.of(context);
-    return mediaQuery.size.width < 1070;
   }
 
   @override

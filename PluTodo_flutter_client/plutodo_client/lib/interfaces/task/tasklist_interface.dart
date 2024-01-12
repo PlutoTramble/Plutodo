@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:plutodo_client/injection.dart';
+import 'package:plutodo_client/interfaces/task/detail/task_detail_interface.dart';
 import 'package:plutodo_client/models/task.dart';
 import 'package:plutodo_client/services/task_service.dart';
 
@@ -50,15 +51,17 @@ class _TaskListInterface extends State<TaskListInterface> {
             widget.selectedCategoryId.value
         );
 
+    if(widget._taskService.isMobile(context)){
+      _goToTaskDetail();
+      return;
+    }
+
     _tasks.forEach((element) {
       element.selected = false;
     });
   }
 
   Future<void> getTodos() async {
-    const int allTasks = -3;
-    const int allTasksByDate = -2;
-    const int allFinishedTasks = -1;
     int categoryId = widget.selectedCategoryId.value;
 
     bool isFromCategory = categoryId >= 0;
@@ -96,6 +99,11 @@ class _TaskListInterface extends State<TaskListInterface> {
     else {
       widget.selectedTask.value = _tasks[index];
 
+      if(widget._taskService.isMobile(context)){
+        _goToTaskDetail();
+        return;
+      }
+
       _tasks.forEach((element) {
         element.id == id && !element.selected
             ? element.selected = true
@@ -108,7 +116,25 @@ class _TaskListInterface extends State<TaskListInterface> {
     });
   }
 
-  void updateTaskList() {
+  void _goToTaskDetail(){
+    if(widget.selectedTask.value == null) {
+      throw Exception("Task needs to be selected");
+    }
+
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) =>
+            TaskDetailInterface(
+              selectedTask: widget.selectedTask,
+              isMobile: true,
+            )
+        )
+    ).whenComplete(() {
+      // Unselect task once changing screen
+      widget.selectedTask.value = null;
+    });
+  }
+
+  void _updateTaskList() {
     bool selectedTaskChanged =
       !_tasks.any((element) => element == widget.selectedTask.value);
     bool selectedTaskIdIsIncludeInTaskList = false;
@@ -135,7 +161,7 @@ class _TaskListInterface extends State<TaskListInterface> {
     setState(() => _tasks);
   }
 
-  void setTaskAsFinished(int index, bool value) async {
+  void _setTaskAsFinished(int index, bool value) async {
     try{
       _tasks[index].finished = value;
       await widget._taskService.editTask(_tasks[index]);
@@ -147,7 +173,7 @@ class _TaskListInterface extends State<TaskListInterface> {
     }
   }
 
-  void deleteSelectedTask() async {
+  void _deleteSelectedTask() async {
     try{
       await widget._taskService.deleteTask(widget.selectedTask.value!.id);
 
@@ -169,7 +195,7 @@ class _TaskListInterface extends State<TaskListInterface> {
     });
 
     widget.selectedTask.addListener(() {
-      updateTaskList();
+      _updateTaskList();
     });
   }
 
@@ -196,7 +222,7 @@ class _TaskListInterface extends State<TaskListInterface> {
                 OutlinedButton(
                   onPressed: () =>
                     widget.selectedTask.value != null
-                      ? deleteSelectedTask()
+                      ? _deleteSelectedTask()
                       : null,
                   child: Text(
                     "Delete\nselected task",
@@ -215,25 +241,26 @@ class _TaskListInterface extends State<TaskListInterface> {
             child: ListView.builder(
               itemCount: _tasks.length,
               shrinkWrap: true,
-              itemBuilder: (context, index) => InkWell(
-                onTap: () => selectTask(index),
-                child: Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(10),
-                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                  decoration: BoxDecoration(
-                    color: !_tasks[index].selected ?
-                      Theme.of(context).colorScheme.inversePrimary:
-                      Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+              itemBuilder: (context, index) => Container(
+                width: double.infinity,
+                margin: const EdgeInsets.all(10),
+                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                decoration: BoxDecoration(
+                  color: !_tasks[index].selected ?
+                  Theme.of(context).colorScheme.inversePrimary:
+                  Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: InkWell(
+                  onTap: () => selectTask(index),
+
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Checkbox(
                           value: _tasks[index].finished,
                           onChanged: (bool) {
-                            setTaskAsFinished(index, bool!);
+                            _setTaskAsFinished(index, bool!);
                           }
                       ),
 
