@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:plutodo_client/injection.dart';
 import 'package:plutodo_client/models/authentication/login_dto.dart';
 import 'package:plutodo_client/models/authentication/register_dto.dart';
+import 'package:plutodo_client/services/http/error_message.dart';
 import 'package:plutodo_client/services/http/http_service.dart';
 import 'package:plutodo_client/services/user_singleton.dart';
 
@@ -17,6 +19,11 @@ class AuthenticationService {
 
       User().username = register.username;
     }
+    on DioException catch(e) {
+      throw errorHandling(
+          ErrorMessage.fromJson(e.response?.data).message!
+      );
+    }
     catch(e){
       rethrow;
     }
@@ -28,8 +35,22 @@ class AuthenticationService {
 
       User().username = login.username;
     }
+    on DioException catch(e) {
+      throw errorHandling(
+          ErrorMessage.fromJson(e.response?.data).message!
+      );
+    }
     catch(e){
       rethrow;
+    }
+  }
+
+  String errorHandling(String message) {
+    switch(message){
+      case "IncorrectUsernameOrPassword":
+        return "Incorrect Username or password";
+      default:
+        return "Unknown error occured.";
     }
   }
 }

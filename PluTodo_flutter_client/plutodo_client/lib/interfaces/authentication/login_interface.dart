@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:plutodo_client/injection.dart';
 import 'package:plutodo_client/models/authentication/login_dto.dart';
@@ -25,14 +26,25 @@ class _LoginInterface extends State<LoginInterface> {
     try{
       await widget._authenticationService.logInUser(userInformation);
 
-      popAndGo('/tasks');
+      _popAndGo('/tasks');
+    }
+    on DioException catch(e){
+      showMessage(e.toString());
     }
     catch(e){
-      print(e);
+      showMessage(e.toString());
     }
   }
   
-  void popAndGo(String route) {
+  void showMessage(String message){
+    SnackBar snackBar = SnackBar(
+        content: Text(message)
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+  
+  void _popAndGo(String route) {
     Navigator.popAndPushNamed(context, route);
   }
 
@@ -70,7 +82,7 @@ class _LoginInterface extends State<LoginInterface> {
 
               TextField(
                 controller: usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: "Username"
                 ),
@@ -78,7 +90,7 @@ class _LoginInterface extends State<LoginInterface> {
 
               TextField(
                 controller: passwordController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: "Password",
                 ),
@@ -90,9 +102,9 @@ class _LoginInterface extends State<LoginInterface> {
                 children: [
                   ElevatedButton(
                     onPressed: () => logIn(),
-                    child: Text(
+                    child: const Text(
                       "Login",
-                      textScaler: const TextScaler.linear(1.3),
+                      textScaler: TextScaler.linear(1.3),
                     ),
                   ),
 
@@ -100,9 +112,9 @@ class _LoginInterface extends State<LoginInterface> {
                     onPressed: () => {
                       Navigator.pushNamed(context, '/register')
                     },
-                    child: Text(
+                    child: const Text(
                       "Register",
-                      textScaler: const TextScaler.linear(1.3),
+                      textScaler: TextScaler.linear(1.3),
                     ),
                   ),
                 ],
