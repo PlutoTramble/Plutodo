@@ -20,9 +20,9 @@ CREATE TABLE public.category
     name varchar(30) NOT NULL,
     color varchar(7) NULL,
     date_created TIMESTAMP NOT NULL DEFAULT NOW(),
-    owner_id uuid NOT NULL,
-    FOREIGN KEY (owner_id) REFERENCES "user_account"(id),
-    UNIQUE(owner_id, name)
+    user_account_id uuid NOT NULL,
+    FOREIGN KEY (user_account_id) REFERENCES "user_account"(id),
+    UNIQUE(user_account_id, name)
 );
 
 CREATE TABLE public.task_item
