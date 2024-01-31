@@ -60,7 +60,7 @@ CREATE TABLE public.deleted_items
     date_deleted TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-------- User authentication
+------- Procedures
 CREATE PROCEDURE create_user(
     p_email TEXT,
     p_username TEXT,
@@ -72,36 +72,6 @@ $$
 BEGIN
 INSERT INTO public."user_account"(username, email_address, "password")
 VALUES(p_username, p_email, crypt(p_password, gen_salt('bf')));
-END; $$;
-
-CREATE FUNCTION authenticate_user_email(p_email TEXT, p_password TEXT)
-    RETURNS uuid
-    LANGUAGE PLPGSQL
-AS
-$$
-DECLARE uuid_result uuid;
-BEGIN
-SELECT Id
-INTO uuid_result
-FROM public."user_account"
-WHERE email_address = p_email AND crypt(p_password, "password");
-
-RETURN uuid_result;
-END; $$;
-
-CREATE FUNCTION authenticate_user_name(p_name TEXT, p_password TEXT)
-    RETURNS uuid
-    LANGUAGE PLPGSQL
-AS
-$$
-DECLARE uuid_result uuid;
-BEGIN
-SELECT Id
-INTO uuid_result
-FROM public."user_account"
-WHERE name = p_name AND crypt(p_password, "password");
-
-RETURN uuid_result;
 END; $$;
 
 
