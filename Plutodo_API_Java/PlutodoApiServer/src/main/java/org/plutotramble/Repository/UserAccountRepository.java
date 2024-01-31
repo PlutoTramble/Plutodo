@@ -14,7 +14,7 @@ public interface UserAccountRepository extends CrudRepository<UserAccountEntity,
     Future<UserAccountEntity> findByUsername(String Username);
 
     @Procedure(procedureName = "create_user")
-    boolean createUser(
+    void createUser(
             @Param("p_email") String email,
             @Param("p_username") String username,
             @Param("p_password") String password);
