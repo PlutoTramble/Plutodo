@@ -1,4 +1,4 @@
-package org.plutotramble.Entities;
+package org.plutotramble.category;
 
 import jakarta.persistence.*;
 

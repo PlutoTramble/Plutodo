@@ -1,4 +1,4 @@
-package org.plutotramble.Entities;
+package org.plutotramble.calendar;
 
 import jakarta.persistence.*;
 

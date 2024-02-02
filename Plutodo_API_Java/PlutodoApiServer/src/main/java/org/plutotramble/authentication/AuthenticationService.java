@@ -1,8 +1,10 @@
-package org.plutotramble.Services;
+package org.plutotramble.authentication;
 
-import org.plutotramble.Entities.DTOs.RegisterDTO;
-import org.plutotramble.Exceptions.*;
-import org.plutotramble.Repository.UserAccountRepository;
+import org.plutotramble.authentication.exceptions.EmailAddressAlreadyExistsAuthenticationException;
+import org.plutotramble.authentication.exceptions.InvalidEmailAddressException;
+import org.plutotramble.authentication.exceptions.InvalidPasswordException;
+import org.plutotramble.authentication.exceptions.InvalidUsernameException;
+import org.plutotramble.authentication.viewmodels.RegisterViewmodel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,34 +23,34 @@ public class AuthenticationService{
 
 
     @Async
-    public void CreateUser(RegisterDTO registerDTO) throws ExecutionException, InterruptedException {
-        logger.atTrace().log("Checking if new user (" + registerDTO.username + ") can be created.");
+    public void CreateUser(RegisterViewmodel registerViewmodel) throws ExecutionException, InterruptedException {
+        logger.atTrace().log("Checking if new user (" + registerViewmodel.username + ") can be created.");
 
-        if(userRepository.existsByUsernameIgnoreCase(registerDTO.username).get()){
+        if(userRepository.existsByUsernameIgnoreCase(registerViewmodel.username).get()){
             throw new InvalidUsernameException(
                     "The username is already used by another user."
             );
         }
 
-        if (userRepository.existsByEmailAddressIgnoreCase(registerDTO.emailAddress).get()) {
+        if (userRepository.existsByEmailAddressIgnoreCase(registerViewmodel.emailAddress).get()) {
             throw new EmailAddressAlreadyExistsAuthenticationException(
                     "The email address is already used by another user."
             );
         }
 
-        if(registerDTO.username.isEmpty()){
+        if(registerViewmodel.username.isEmpty()){
             throw new InvalidUsernameException("The username is invalid.");
         }
 
-        if(!isValidEmailAddress(registerDTO.emailAddress)){
+        if(!isValidEmailAddress(registerViewmodel.emailAddress)){
             throw new InvalidEmailAddressException("The email address is invalid.");
         }
 
-        if(!registerDTO.password.equals(registerDTO.passwordConfirm)){
+        if(!registerViewmodel.password.equals(registerViewmodel.passwordConfirm)){
             throw new InvalidPasswordException("Password and password confirmation are not the same");
         }
 
-        if(!isPasswordSecure(registerDTO.password)){
+        if(!isPasswordSecure(registerViewmodel.password)){
             throw new InvalidPasswordException(
                     "The password needs to contains at least " +
                     "one lower and upper case letter, one number, " +
@@ -56,11 +58,11 @@ public class AuthenticationService{
             );
         }
 
-        logger.atTrace().log(registerDTO.username + "can be created.");
+        logger.atTrace().log(registerViewmodel.username + "can be created.");
 
-        userRepository.createUser(registerDTO.emailAddress, registerDTO.username, registerDTO.password);
+        userRepository.createUser(registerViewmodel.emailAddress, registerViewmodel.username, registerViewmodel.password);
 
-        logger.atTrace().log(registerDTO.username + "has been created");
+        logger.atTrace().log(registerViewmodel.username + "has been created");
     }
 
     /**

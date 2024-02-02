@@ -1,7 +1,7 @@
-package org.plutotramble.Services;
+package org.plutotramble.shared;
 
-import org.plutotramble.Entities.UserAccountEntity;
-import org.plutotramble.Repository.UserAccountRepository;
+import org.plutotramble.authentication.UserAccountEntity;
+import org.plutotramble.authentication.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class PlutodoUserDetailService implements UserDetailsService {
+
     @Autowired
     private UserAccountRepository userRepository;
 

@@ -1,4 +1,4 @@
-package org.plutotramble.Exceptions;
+package org.plutotramble.authentication.exceptions;
 
 import org.springframework.security.core.AuthenticationException;
 

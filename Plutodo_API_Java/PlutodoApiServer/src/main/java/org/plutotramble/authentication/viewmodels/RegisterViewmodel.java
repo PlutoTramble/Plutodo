@@ -1,6 +1,6 @@
-package org.plutotramble.Entities.DTOs;
+package org.plutotramble.authentication.viewmodels;
 
-public class RegisterDTO {
+public class RegisterViewmodel {
     public String emailAddress = "";
     public String username = "";
     public String password = "";

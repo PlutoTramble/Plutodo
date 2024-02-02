@@ -1,4 +1,4 @@
-package org.plutotramble.Entities;
+package org.plutotramble.authentication;
 
 import jakarta.persistence.*;
 

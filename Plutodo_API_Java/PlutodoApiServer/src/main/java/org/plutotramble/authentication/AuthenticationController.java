@@ -1,10 +1,12 @@
-package org.plutotramble.Controllers;
+package org.plutotramble.authentication;
 
 import jakarta.annotation.security.PermitAll;
-import org.plutotramble.Entities.DTOs.LoginDTO;
-import org.plutotramble.Entities.DTOs.RegisterDTO;
-import org.plutotramble.Exceptions.*;
-import org.plutotramble.Services.AuthenticationService;
+import org.plutotramble.authentication.exceptions.EmailAddressAlreadyExistsAuthenticationException;
+import org.plutotramble.authentication.exceptions.InvalidEmailAddressException;
+import org.plutotramble.authentication.exceptions.InvalidPasswordException;
+import org.plutotramble.authentication.exceptions.InvalidUsernameException;
+import org.plutotramble.authentication.viewmodels.LoginViewmodel;
+import org.plutotramble.authentication.viewmodels.RegisterViewmodel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +35,9 @@ public class AuthenticationController {
     @Async
     @PermitAll
     @PostMapping(value = "/login")
-    public CompletableFuture<ResponseEntity<Object>> login(@RequestBody LoginDTO loginDTO){
+    public CompletableFuture<ResponseEntity<Object>> login(@RequestBody LoginViewmodel loginViewmodel){
         UsernamePasswordAuthenticationToken authReq
-                = new UsernamePasswordAuthenticationToken(loginDTO.username, loginDTO.password);
+                = new UsernamePasswordAuthenticationToken(loginViewmodel.username, loginViewmodel.password);
         Authentication auth = authenticationManager.authenticate(authReq);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -45,9 +47,9 @@ public class AuthenticationController {
     @Async
     @PermitAll
     @PostMapping(value = "/register")
-    public CompletableFuture<ResponseEntity> Register(@RequestBody RegisterDTO registerDTO){
+    public CompletableFuture<ResponseEntity> Register(@RequestBody RegisterViewmodel registerViewmodel){
         try {
-            authenticationService.CreateUser(registerDTO);
+            authenticationService.CreateUser(registerViewmodel);
         }
         catch (ExecutionException | InterruptedException e) {
             return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
