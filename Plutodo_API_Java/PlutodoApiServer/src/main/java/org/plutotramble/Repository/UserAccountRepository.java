@@ -13,6 +13,13 @@ public interface UserAccountRepository extends CrudRepository<UserAccountEntity,
     @Async
     Future<UserAccountEntity> findByUsername(String Username);
 
+    @Async
+    Future<Boolean> existsByUsernameIgnoreCase(String username);
+
+    @Async
+    Future<Boolean> existsByEmailAddressIgnoreCase(String email);
+
+    @Async
     @Procedure(procedureName = "create_user")
     void createUser(
             @Param("p_email") String email,
