@@ -21,8 +21,8 @@ class MainTaskInterface extends StatefulWidget {
 
 class _MainTaskInterface extends State<MainTaskInterface> {
   late CategoryInterface categoryInterface;
-  late TaskListInterface taskInterface;
-  late TaskDetailInterface? taskDetailInterface;
+  late TaskListInterface taskListInterface;
+  TaskDetailInterface? taskDetailInterface;
 
   late ValueListenable<TaskState>? taskState;
 
@@ -33,9 +33,10 @@ class _MainTaskInterface extends State<MainTaskInterface> {
 
     if(isNewTask) {
       task = await widget._taskService
-          .addNewTask(oldTask, taskInterface.selectedCategoryId.value);
+          .addNewTask(oldTask, taskListInterface.selectedCategoryId.value);
 
-      taskInterface.selectedTask.value = task;
+      task.isNew = true;
+      taskListInterface.selectedTask.value = task;
     }
     else {
       task = await widget._taskService
@@ -46,15 +47,21 @@ class _MainTaskInterface extends State<MainTaskInterface> {
   }
 
   void _deselectTask() {
-    taskInterface.selectedTask.value = null;
+    taskListInterface.selectedTask.value = null;
   }
 
   void selectTask() {
-    if(taskInterface.selectedTask.value != null){
+    if(taskListInterface.selectedTask.value != null){
+      if(taskListInterface.selectedTask.value!.isNew){
+        return;
+      }
+
+      bool isMobile = widget._taskService.isMobile(context);
+
       taskDetailInterface =
           TaskDetailInterface(
-            selectedTask: taskInterface.selectedTask,
-            isMobile: false,
+            selectedTask: taskListInterface.selectedTask,
+            isMobile: isMobile,
           );
 
       taskState = taskDetailInterface!.taskDetailState;
@@ -76,6 +83,11 @@ class _MainTaskInterface extends State<MainTaskInterface> {
         }
       });
 
+      if(isMobile){
+        _goToTaskDetail(taskDetailInterface!);
+        return;
+      }
+
       showTaskDetail = true;
     }
     else {
@@ -90,15 +102,31 @@ class _MainTaskInterface extends State<MainTaskInterface> {
     });
   }
 
+  void _goToTaskDetail(TaskDetailInterface interface){
+    if(taskListInterface.selectedTask.value == null) {
+      throw Exception("Task needs to be selected");
+    }
+
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) =>
+          interface
+        )
+    ).whenComplete(() {
+      // if(taskState?.value.detailInterfaceState != DetailInterfaceState.newAddition) {
+      //   _deselectTask();
+      // }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     categoryInterface = CategoryInterface();
 
-    taskInterface =
+    taskListInterface =
         TaskListInterface(selectedCategoryId: categoryInterface.selectedCategoryId);
 
-    taskInterface.selectedTask.addListener(() {
+    taskListInterface.selectedTask.addListener(() {
       selectTask();
     });
   }
@@ -131,7 +159,7 @@ class _MainTaskInterface extends State<MainTaskInterface> {
                     bottomRight: Radius.circular(20)
                 ),
               ),
-              child: taskInterface
+              child: taskListInterface
             ),
           ),
 

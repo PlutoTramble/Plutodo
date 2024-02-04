@@ -16,6 +16,9 @@ class Task {
   late int ordering;
   late int? categoryId;
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool isNew = false;
+
   @JsonKey(includeFromJson: false, includeToJson: false)
   late bool selected = false;
 

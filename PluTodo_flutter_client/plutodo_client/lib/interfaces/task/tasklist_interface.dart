@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:plutodo_client/injection.dart';
-import 'package:plutodo_client/interfaces/task/detail/task_detail_interface.dart';
 import 'package:plutodo_client/models/task.dart';
 import 'package:plutodo_client/services/task_service.dart';
 
@@ -52,7 +51,6 @@ class _TaskListInterface extends State<TaskListInterface> {
         );
 
     if(widget._taskService.isMobile(context)){
-      _goToTaskDetail();
       return;
     }
 
@@ -100,7 +98,6 @@ class _TaskListInterface extends State<TaskListInterface> {
       widget.selectedTask.value = _tasks[index];
 
       if(widget._taskService.isMobile(context)){
-        _goToTaskDetail();
         return;
       }
 
@@ -113,24 +110,6 @@ class _TaskListInterface extends State<TaskListInterface> {
 
     setState(() {
       _tasks;
-    });
-  }
-
-  void _goToTaskDetail(){
-    if(widget.selectedTask.value == null) {
-      throw Exception("Task needs to be selected");
-    }
-
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) =>
-            TaskDetailInterface(
-              selectedTask: widget.selectedTask,
-              isMobile: true,
-            )
-        )
-    ).whenComplete(() {
-      // Unselect task once changing screen
-      widget.selectedTask.value = null;
     });
   }
 
@@ -155,6 +134,7 @@ class _TaskListInterface extends State<TaskListInterface> {
     else if(selectedTaskChanged && task == null) {
       _tasks.forEach((element) {
         element.selected = false;
+        element.isNew = false;
       });
     }
 

@@ -57,7 +57,7 @@ class _TaskDetailInterface extends State<TaskDetailInterface> {
     return null;
   }
 
-  void changeTaskState(DetailInterfaceState state, bool includeTask) {
+  void _changeTaskState(DetailInterfaceState state, bool includeTask) {
     if(includeTask){
       _task.name = taskNameController.value.text;
       _task.description = taskDescriptionController.value.text;
@@ -88,9 +88,6 @@ class _TaskDetailInterface extends State<TaskDetailInterface> {
   @override
   void initState() {
     getTodo();
-    widget.selectedTask.addListener(() {
-      getTodo();
-    });
 
     taskDescriptionController =
         TextEditingController(text: _task.description ?? "");
@@ -165,7 +162,7 @@ class _TaskDetailInterface extends State<TaskDetailInterface> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    changeTaskState(DetailInterfaceState.closed, false);
+                    _changeTaskState(DetailInterfaceState.closed, false);
                   },
                   child: const Text(
                     "Cancel",
@@ -176,8 +173,8 @@ class _TaskDetailInterface extends State<TaskDetailInterface> {
                 ElevatedButton(
                   onPressed: () {
                     _isNewTask
-                        ? changeTaskState(DetailInterfaceState.newAddition, true)
-                        : changeTaskState(DetailInterfaceState.modified, true);
+                        ? _changeTaskState(DetailInterfaceState.newAddition, true)
+                        : _changeTaskState(DetailInterfaceState.modified, true);
                   },
                   child: const Text(
                     "Submit",
