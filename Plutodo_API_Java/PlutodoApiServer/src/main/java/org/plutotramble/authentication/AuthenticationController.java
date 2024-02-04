@@ -5,8 +5,8 @@ import org.plutotramble.authentication.exceptions.EmailAddressAlreadyExistsAuthe
 import org.plutotramble.authentication.exceptions.InvalidEmailAddressException;
 import org.plutotramble.authentication.exceptions.InvalidPasswordException;
 import org.plutotramble.authentication.exceptions.InvalidUsernameException;
-import org.plutotramble.authentication.viewmodels.LoginViewmodel;
-import org.plutotramble.authentication.viewmodels.RegisterViewmodel;
+import org.plutotramble.authentication.dto.LoginDTO;
+import org.plutotramble.authentication.dto.RegisterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +35,9 @@ public class AuthenticationController {
     @Async
     @PermitAll
     @PostMapping(value = "/login")
-    public CompletableFuture<ResponseEntity<Object>> login(@RequestBody LoginViewmodel loginViewmodel){
+    public CompletableFuture<ResponseEntity<Object>> login(@RequestBody LoginDTO loginDTO){
         UsernamePasswordAuthenticationToken authReq
-                = new UsernamePasswordAuthenticationToken(loginViewmodel.username, loginViewmodel.password);
+                = new UsernamePasswordAuthenticationToken(loginDTO.username, loginDTO.password);
         Authentication auth = authenticationManager.authenticate(authReq);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -47,9 +47,9 @@ public class AuthenticationController {
     @Async
     @PermitAll
     @PostMapping(value = "/register")
-    public CompletableFuture<ResponseEntity<Object>> Register(@RequestBody RegisterViewmodel registerViewmodel){
+    public CompletableFuture<ResponseEntity<Object>> Register(@RequestBody RegisterDTO registerDTO){
         try {
-            authenticationService.CreateUser(registerViewmodel);
+            authenticationService.CreateUser(registerDTO);
         }
         catch (ExecutionException | InterruptedException e) {
             return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
