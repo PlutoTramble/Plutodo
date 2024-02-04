@@ -26,7 +26,7 @@ class _LoginInterface extends State<LoginInterface> {
     try{
       await widget._authenticationService.logInUser(userInformation);
 
-      _popAndGo('/tasks');
+      _popAndGo('/Plutodo');
     }
     on DioException catch(e){
       showMessage(e.toString());
