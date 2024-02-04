@@ -34,6 +34,9 @@ public class PlutodoUserDetailService implements UserDetailsService {
                 .username(userAccount.getUsername())
                 .password(userAccount.getPassword())
                 .roles("USER")
+                .accountExpired(false)
+                .credentialsExpired(false)
+                .accountLocked(false)
                 .build();
     }
 }

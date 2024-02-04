@@ -21,7 +21,6 @@ public class AuthenticationService{
     private final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
 
-
     @Async
     public void CreateUser(RegisterViewmodel registerViewmodel) throws ExecutionException, InterruptedException {
         logger.atTrace().log("Checking if new user (" + registerViewmodel.username + ") can be created.");

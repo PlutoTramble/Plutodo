@@ -47,7 +47,7 @@ public class AuthenticationController {
     @Async
     @PermitAll
     @PostMapping(value = "/register")
-    public CompletableFuture<ResponseEntity> Register(@RequestBody RegisterViewmodel registerViewmodel){
+    public CompletableFuture<ResponseEntity<Object>> Register(@RequestBody RegisterViewmodel registerViewmodel){
         try {
             authenticationService.CreateUser(registerViewmodel);
         }

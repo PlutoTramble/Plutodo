@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,7 +20,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -30,15 +29,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-            .csrf(AbstractHttpConfigurer::disable)
-            //.cors(cors -> cors.configurationSource(apiConfigurationSource()))
+        http
+           // .cors(cors -> cors.configurationSource(apiConfigurationSource()))
+            .cors(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((authorize) -> authorize
                     .requestMatchers("/Authentication/**").permitAll()
-                    .requestMatchers("/**").authenticated()
-            ).sessionManagement(session ->
-                    session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-            );
+                    .anyRequest().permitAll()
+            )
+            .securityContext((securityContext) -> securityContext
+                    .requireExplicitSave(false)
+            )
+            .csrf(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .formLogin(FormLoginConfigurer::disable);
 
         return http.build();
     }
@@ -56,12 +59,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager() {
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
 
-        return new ProviderManager(authenticationProvider);
+        return authenticationProvider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager() {
+        return new ProviderManager(authenticationProvider());
     }
 
     @Bean
