@@ -14,4 +14,7 @@ public interface CategoryRepository extends CrudRepository<CategoryEntity, Objec
 
     @Async
     Future<CategoryEntity> getCategoryEntityByNameContaining(String name);
+
+    @Async
+    Future<CategoryEntity> getCategoryEntityByIdAndUserAccountId(UUID id, UUID userAccountId);
 }

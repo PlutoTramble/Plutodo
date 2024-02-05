@@ -34,7 +34,7 @@ public class SecurityConfig {
             .cors(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((authorize) -> authorize
                     .requestMatchers("/Authentication/**").permitAll()
-                    .anyRequest().permitAll()
+                    .anyRequest().authenticated()
             )
             .securityContext((securityContext) -> securityContext
                     .requireExplicitSave(false)

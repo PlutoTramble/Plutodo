@@ -1,9 +1,9 @@
 package org.plutotramble.category;
 
-
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.plutotramble.authentication.UserAccountRepository;
+import org.plutotramble.shared.exceptions.InvalidItemPropertyException;
+import org.plutotramble.shared.exceptions.ItemNotFoundException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -33,22 +33,30 @@ public class CategoryService {
         UUID userId = getUserUUIDByName(username).get();
 
         List<CategoryEntity> categories = categoryRepository.getCategoryEntitiesByUserAccountIdOrderByName(userId).get();
-        List<CategoryDTO> categoriesDTO = modelMapper.map(categories, new TypeToken<List<CategoryEntity>>() {}.getType());
+
+        List<CategoryDTO> categoriesDTO = categories.stream().map(category -> {
+            CategoryDTO dto = new CategoryDTO();
+            dto.name = category.getName();
+            dto.color = category.getColor();
+            dto.id = category.getId();
+            dto.dateCreated = category.getDateCreated().toLocalDateTime();
+            return dto;
+        }).toList();
 
         return CompletableFuture.completedFuture(categoriesDTO);
     }
 
     @Async
-    public CompletableFuture<CategoryDTO> createCategory(String username, CategoryDTO categoryDTO) throws ExecutionException, InterruptedException {
+    public CompletableFuture<CategoryDTO> createCategory(String username, CategoryDTO categoryDTO) throws ExecutionException, InterruptedException, InvalidItemPropertyException {
         // Verification
         if(categoryDTO.color.length() > 7){
-            throw new RuntimeException("Category color is too long. Maximum length is 7.");
+            throw new InvalidItemPropertyException("Category color is too long. Maximum length is 7.");
         }
         if(categoryDTO.name.length() > 30) {
-            throw new RuntimeException("Category name is too long. Maximum length is 30.");
+            throw new InvalidItemPropertyException("Category name is too long. Maximum length is 30.");
         }
         if(categoryDTO.name.length() < 2) {
-            throw new RuntimeException("Category name must be at least 2 characters.");
+            throw new InvalidItemPropertyException("Category name must be at least 2 characters.");
         }
 
         // Create entity
@@ -66,6 +74,19 @@ public class CategoryService {
         categoryDTO.dateCreated = category.getDateCreated().toLocalDateTime();
 
         return CompletableFuture.completedFuture(categoryDTO);
+    }
+
+    @Async
+    public void deleteCategory(String username, UUID categoryId) throws ExecutionException, InterruptedException, ItemNotFoundException {
+        UUID userId = getUserUUIDByName(username).get();
+
+        CategoryEntity category = categoryRepository.getCategoryEntityByIdAndUserAccountId(categoryId, userId).get();
+
+        if(category == null){
+            throw new ItemNotFoundException("Category not found");
+        }
+
+        categoryRepository.deleteById(categoryId);
     }
 
     @Async

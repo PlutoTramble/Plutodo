@@ -7,6 +7,7 @@ import org.plutotramble.authentication.exceptions.InvalidPasswordException;
 import org.plutotramble.authentication.exceptions.InvalidUsernameException;
 import org.plutotramble.authentication.dto.LoginDTO;
 import org.plutotramble.authentication.dto.RegisterDTO;
+import org.plutotramble.shared.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class AuthenticationController {
         }
         catch (InvalidPasswordException | EmailAddressAlreadyExistsAuthenticationException |
                InvalidEmailAddressException | InvalidUsernameException e) {
-            return CompletableFuture.completedFuture(new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST));
+            return CompletableFuture.completedFuture(new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.BAD_REQUEST));
         }
 
         return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.OK));

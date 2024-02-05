@@ -80,43 +80,43 @@ END; $$;
 ------------------
 
 -- Calendar Event
-CREATE FUNCTION log_deleted_calendar_event()
+CREATE OR REPLACE FUNCTION log_deleted_calendar_event()
     RETURNS TRIGGER
     LANGUAGE PLPGSQL
 AS
 $$
 BEGIN
 INSERT INTO deleted_items(name, table_name, "content", date_created)
-VALUES (OLD.name, 'calendar_event', (SELECT row_to_json(OLD) FROM OLD), OLD.date_created);
+VALUES (OLD.name, 'calendar_event', row_to_json(OLD), OLD.date_created);
 RETURN OLD;
 END; $$;
 
-CREATE TRIGGER calendar_event_delete
-    AFTER DELETE
+CREATE OR REPLACE TRIGGER calendar_event_delete
+    BEFORE DELETE
     ON calendar_event
     FOR EACH ROW
     EXECUTE FUNCTION log_deleted_calendar_event();
 
 -- Task Item
-CREATE FUNCTION log_deleted_task_item()
+CREATE OR REPLACE FUNCTION log_deleted_task_item()
     RETURNS TRIGGER
     LANGUAGE PLPGSQL
 AS
 $$
 BEGIN
 INSERT INTO deleted_items(name, table_name, "content", date_created)
-VALUES (OLD.name, 'task_item', (SELECT row_to_json(OLD) FROM OLD), OLD.date_created);
+VALUES (OLD.name, 'task_item', row_to_json(OLD), OLD.date_created);
 RETURN OLD;
 END; $$;
 
-CREATE TRIGGER task_item_delete
-    AFTER DELETE
+CREATE OR REPLACE TRIGGER task_item_delete
+    BEFORE DELETE
     ON task_item
     FOR EACH ROW
     EXECUTE FUNCTION log_deleted_task_item();
 
 -- Category
-CREATE FUNCTION log_deleted_category()
+CREATE OR REPLACE FUNCTION log_deleted_category()
     RETURNS TRIGGER
     LANGUAGE PLPGSQL
 AS
@@ -129,32 +129,32 @@ DELETE FROM task_item
 WHERE category_id = OLD.Id;
 
 INSERT INTO deleted_items(name, table_name, "content", date_created)
-VALUES (OLD.name, 'category', (SELECT row_to_json(OLD) FROM OLD), OLD.date_created);
+VALUES (OLD.name, 'category', row_to_json(OLD), OLD.date_created);
 RETURN OLD;
 END; $$;
 
-CREATE TRIGGER category_delete
-    AFTER DELETE
+CREATE OR REPLACE TRIGGER category_delete
+    BEFORE DELETE
     ON category
     FOR EACH ROW
     EXECUTE FUNCTION log_deleted_category();
 
 -- UserAccount
-CREATE FUNCTION log_deleted_user_account()
+CREATE OR REPLACE FUNCTION log_deleted_user_account()
     RETURNS TRIGGER
     LANGUAGE PLPGSQL
 AS
 $$
 BEGIN
 DELETE FROM category
-WHERE owner_id = OLD.Id;
+WHERE category.user_account_id = OLD.Id;
 
 INSERT INTO deleted_items(name, table_name, "content", date_created)
-VALUES (OLD.name, 'user_account', (SELECT row_to_json(OLD) FROM OLD), OLD.date_created);
+VALUES (OLD.name, 'user_account', row_to_json(OLD), OLD.date_created);
 RETURN OLD;
 END; $$;
 
-CREATE TRIGGER user_account_delete
+CREATE OR REPLACE TRIGGER user_account_delete
     AFTER DELETE
     ON user_account
     FOR EACH ROW
