@@ -3,9 +3,7 @@ package org.plutotramble.category;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -23,11 +21,16 @@ public class CategoryController {
     }
 
     @Async
-    @GetMapping(value = "/get")
-    public CompletableFuture<ResponseEntity<Object>> get(Principal principal) throws ExecutionException, InterruptedException {
-
+    @GetMapping(value = "/getFromUser")
+    public CompletableFuture<ResponseEntity<List<CategoryDTO>>> getFromUser(Principal principal) throws ExecutionException, InterruptedException {
         List<CategoryDTO> categories = categoryService.categoriesByUserName(principal.getName()).get();
-
         return CompletableFuture.completedFuture(new ResponseEntity<>(categories, HttpStatus.OK));
+    }
+
+    @Async
+    @PostMapping(value = "/add")
+    public CompletableFuture<ResponseEntity<CategoryDTO>> add(@RequestBody CategoryDTO categoryDTO, Principal principal) throws ExecutionException, InterruptedException {
+        categoryDTO = categoryService.createCategory(principal.getName(), categoryDTO).get();
+        return CompletableFuture.completedFuture(new ResponseEntity<>(categoryDTO, HttpStatus.OK));
     }
 }

@@ -1,15 +1,11 @@
 package org.plutotramble.category;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class CategoryDTO {
-
-    UUID Id = null;
-
-    String Name = "";
-
-    String Color = "";
-
-    Timestamp DateCreated = null;
+    public UUID id;
+    public String name;
+    public String color;
+    public LocalDateTime dateCreated;
 }
