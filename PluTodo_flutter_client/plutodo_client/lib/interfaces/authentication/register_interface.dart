@@ -29,7 +29,7 @@ class _RegisterInterface extends State<RegisterInterface> {
     try {
       await widget._authenticationService.signUp(userInformation);
 
-      popAndGo('/tasks');
+      popAndGo('/Plutodo');
     }
     catch(e) {
       print(e);
@@ -74,7 +74,7 @@ class _RegisterInterface extends State<RegisterInterface> {
 
               TextField(
                 controller: usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Username"
                 ),
@@ -82,7 +82,7 @@ class _RegisterInterface extends State<RegisterInterface> {
 
               TextField(
                 controller: emailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Email"
                 ),
@@ -90,7 +90,7 @@ class _RegisterInterface extends State<RegisterInterface> {
 
               TextField(
                 controller: passwordController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: "Password",
                 ),
@@ -99,7 +99,7 @@ class _RegisterInterface extends State<RegisterInterface> {
 
               TextField(
                 controller: passwordConfirmController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: "Confirm password",
                 ),
@@ -111,9 +111,9 @@ class _RegisterInterface extends State<RegisterInterface> {
                 children: [
                   ElevatedButton(
                     onPressed: () => signUp(),
-                    child: Text(
-                      "Login",
-                      textScaler: const TextScaler.linear(1.3),
+                    child: const Text(
+                      "Register",
+                      textScaler: TextScaler.linear(1.3),
                     ),
                   ),
 
@@ -121,9 +121,9 @@ class _RegisterInterface extends State<RegisterInterface> {
                     onPressed: () => {
                       Navigator.popAndPushNamed(context, '/login')
                     },
-                    child: Text(
+                    child: const Text(
                       "Go back",
-                      textScaler: const TextScaler.linear(1.3),
+                      textScaler: TextScaler.linear(1.3),
                     ),
                   ),
                 ],

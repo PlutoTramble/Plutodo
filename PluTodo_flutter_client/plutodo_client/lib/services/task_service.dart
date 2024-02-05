@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:plutodo_client/injection.dart';
 import 'package:plutodo_client/models/category.dart';
 import 'package:plutodo_client/models/task.dart';
@@ -121,5 +122,10 @@ class TaskService {
     catch(e) {
       rethrow;
     }
+  }
+
+  bool isMobile(BuildContext context){
+    MediaQueryData mediaQuery = MediaQuery.of(context);
+    return mediaQuery.size.width < 1070;
   }
 }

@@ -6,7 +6,7 @@ import 'package:plutodo_client/interfaces/task/category/category_interface.dart'
 import 'package:plutodo_client/interfaces/task/detail/task_detail_interface.dart';
 import 'package:plutodo_client/interfaces/task/detail/detail_interface_state.dart';
 import 'package:plutodo_client/interfaces/task/detail/task_state.dart';
-import 'package:plutodo_client/interfaces/task/task_interface.dart';
+import 'package:plutodo_client/interfaces/task/tasklist_interface.dart';
 import 'package:plutodo_client/models/task.dart';
 import 'package:plutodo_client/services/task_service.dart';
 
@@ -21,57 +21,72 @@ class MainTaskInterface extends StatefulWidget {
 
 class _MainTaskInterface extends State<MainTaskInterface> {
   late CategoryInterface categoryInterface;
-  late TaskInterface taskInterface;
-  late TaskDetailInterface? taskDetailInterface;
+  late TaskListInterface taskListInterface;
+  TaskDetailInterface? taskDetailInterface;
 
   late ValueListenable<TaskState>? taskState;
 
   bool showTaskDetail = false;
 
-  void _handleModifiedTask(Task oldTask, bool newTask) async {
+  void _handleModifiedTask(Task oldTask, bool isNewTask) async {
     Task task;
 
-    if(newTask) {
+    if(isNewTask) {
       task = await widget._taskService
-          .addNewTask(oldTask, taskInterface.selectedCategoryId.value);
+          .addNewTask(oldTask, taskListInterface.selectedCategoryId.value);
 
-      taskInterface.selectedTask.value = task;
+      task.isNew = true;
+      taskListInterface.selectedTask.value = task;
     }
     else {
       task = await widget._taskService
           .editTask(oldTask);
     }
 
-    deselectTask();
+    _deselectTask();
   }
 
-  void deselectTask() {
-    taskInterface.selectedTask.value = null;
+  void _deselectTask() {
+    taskListInterface.selectedTask.value = null;
   }
 
   void selectTask() {
-    if(taskInterface.selectedTask.value != null){
+    if(taskListInterface.selectedTask.value != null){
+      if(taskListInterface.selectedTask.value!.isNew){
+        return;
+      }
+
+      bool isMobile = widget._taskService.isMobile(context);
+
       taskDetailInterface =
-          TaskDetailInterface(selectedTask: taskInterface.selectedTask);
+          TaskDetailInterface(
+            selectedTask: taskListInterface.selectedTask,
+            isMobile: isMobile,
+          );
 
       taskState = taskDetailInterface!.taskDetailState;
 
       taskState!.addListener(() {
         switch(taskState!.value.detailInterfaceState) {
           case(DetailInterfaceState.closed) :
-            deselectTask();
+            _deselectTask();
             break;
           case(DetailInterfaceState.modified) :
             _handleModifiedTask(taskState!.value.task!, false);
-            deselectTask();
+            _deselectTask();
             break;
           case(DetailInterfaceState.newAddition) :
             _handleModifiedTask(taskState!.value.task!, true);
-            deselectTask();
+            _deselectTask();
             break;
           default:
         }
       });
+
+      if(isMobile){
+        _goToTaskDetail(taskDetailInterface!);
+        return;
+      }
 
       showTaskDetail = true;
     }
@@ -87,15 +102,31 @@ class _MainTaskInterface extends State<MainTaskInterface> {
     });
   }
 
+  void _goToTaskDetail(TaskDetailInterface interface){
+    if(taskListInterface.selectedTask.value == null) {
+      throw Exception("Task needs to be selected");
+    }
+
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) =>
+          interface
+        )
+    ).whenComplete(() {
+      // if(taskState?.value.detailInterfaceState != DetailInterfaceState.newAddition) {
+      //   _deselectTask();
+      // }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     categoryInterface = CategoryInterface();
 
-    taskInterface =
-        TaskInterface(selectedCategoryId: categoryInterface.selectedCategoryId);
+    taskListInterface =
+        TaskListInterface(selectedCategoryId: categoryInterface.selectedCategoryId);
 
-    taskInterface.selectedTask.addListener(() {
+    taskListInterface.selectedTask.addListener(() {
       selectTask();
     });
   }
@@ -103,10 +134,6 @@ class _MainTaskInterface extends State<MainTaskInterface> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
       body: Row(
         children: [
 
@@ -128,7 +155,7 @@ class _MainTaskInterface extends State<MainTaskInterface> {
                     bottomRight: Radius.circular(20)
                 ),
               ),
-              child: taskInterface
+              child: taskListInterface
             ),
           ),
 
