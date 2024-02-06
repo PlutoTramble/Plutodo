@@ -98,7 +98,9 @@ public class TaskItemService {
         task.setDescription(taskReceived.description);
         task.setFinished(taskReceived.isFinished);
         task.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
-        task.setDateDue(Timestamp.valueOf(taskReceived.dateDue));
+        if(taskReceived.dateDue != null) {
+            task.setDateDue(Timestamp.valueOf(taskReceived.dateDue));
+        }
         task.setCategory(categoryRepository.findById(taskReceived.categoryId).get());
 
         taskItemRepository.save(task);
@@ -125,7 +127,12 @@ public class TaskItemService {
         }
 
         task.setName(taskItemDTO.name);
-        task.setDateDue(Timestamp.valueOf(taskItemDTO.dateDue));
+        if(taskItemDTO.dateDue != null) {
+            task.setDateDue(Timestamp.valueOf(taskItemDTO.dateDue));
+        }
+        else {
+            task.setDateDue(null);
+        }
         task.setFinished(taskItemDTO.isFinished);
         task.setDescription(taskItemDTO.description);
 
@@ -151,13 +158,13 @@ public class TaskItemService {
     }
 
     private void verifyTaskProperties(TaskItemDTO taskItemDTO, UUID userId) throws InvalidItemPropertyException, InterruptedException, ExecutionException, ItemNotFoundException {
-        if(taskItemDTO.name.length() > 30) {
+        if(taskItemDTO.name.length() > 100) {
             throw new InvalidItemPropertyException("Task's name is too long. Maximum length is 30");
         }
         if(taskItemDTO.categoryId == null) {
             throw new InvalidItemPropertyException("Task needs to be affiliated to a category");
         }
-        if(categoryRepository.existsCategoryEntityByUserAccount_Id(userId).get()) {
+        if(!categoryRepository.existsCategoryEntityByUserAccount_Id(userId).get()) {
             throw new ItemNotFoundException("Category doesn't exist.");
         }
         if(taskItemDTO.description.length() > 8192) {
@@ -170,7 +177,7 @@ public class TaskItemService {
         dto.id = task.getId();
         dto.name = task.getName();
         dto.dateCreated = task.getDateCreated().toLocalDateTime();
-        dto.dateDue = task.getDateDue().toLocalDateTime();
+        dto.dateDue = task.getDateDue() != null ? task.getDateDue().toLocalDateTime() : null;
         dto.description = task.getDescription();
         dto.isFinished = task.getFinished();
         dto.categoryId = task.getCategory().getId();

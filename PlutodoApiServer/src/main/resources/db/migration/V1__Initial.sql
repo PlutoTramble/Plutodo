@@ -28,7 +28,7 @@ CREATE TABLE public.category
 CREATE TABLE public.task_item
 (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(30) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     description VARCHAR(8192),
     is_finished BOOLEAN,
     date_created TIMESTAMP NOT NULL DEFAULT NOW(),

@@ -46,8 +46,8 @@ public class TaskItemController {
 
     @Async
     @GetMapping(value = "/getTaskDetail")
-    public CompletableFuture<ResponseEntity<TaskItemDTO>> getTaskDetail(@RequestParam SmallTaskItemDTO task, Principal principal) throws ExecutionException, InterruptedException, ItemNotFoundException {
-        TaskItemDTO taskItemDTO = taskItemService.taskItemDetail(task.id, principal.getName()).get();
+    public CompletableFuture<ResponseEntity<TaskItemDTO>> getTaskDetail(@RequestParam UUID id, Principal principal) throws ExecutionException, InterruptedException, ItemNotFoundException {
+        TaskItemDTO taskItemDTO = taskItemService.taskItemDetail(id, principal.getName()).get();
         return CompletableFuture.completedFuture(new ResponseEntity<>(taskItemDTO, HttpStatus.OK));
     }
 

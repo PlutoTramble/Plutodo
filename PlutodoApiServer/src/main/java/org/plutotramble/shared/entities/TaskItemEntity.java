@@ -15,7 +15,7 @@ public class TaskItemEntity {
     @Column(name = "id", nullable = false)
     private UUID id;
     @Basic
-    @Column(name = "name", nullable = false, length = 30)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
     @Basic
     @Column(name = "description", nullable = true, length = 8192)
