@@ -1,13 +1,11 @@
 package org.plutotramble.task;
 
+import org.plutotramble.shared.exceptions.InvalidItemPropertyException;
 import org.plutotramble.shared.exceptions.ItemNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -43,6 +41,13 @@ public class TaskItemController {
     @GetMapping(value = "/getTaskDetail")
     public CompletableFuture<ResponseEntity<TaskItemDTO>> getTaskDetail(@RequestParam SmallTaskItemDTO task, Principal principal) throws ExecutionException, InterruptedException, ItemNotFoundException {
         TaskItemDTO taskItemDTO = taskItemService.taskItemDetail(task.id, principal.getName()).get();
+        return CompletableFuture.completedFuture(new ResponseEntity<>(taskItemDTO, HttpStatus.OK));
+    }
+
+    @Async
+    @PostMapping(value = "/add")
+    public CompletableFuture<ResponseEntity<TaskItemDTO>> add(@RequestBody TaskItemDTO taskItemDTO, Principal principal) throws InvalidItemPropertyException, ExecutionException, InterruptedException {
+        taskItemDTO = taskItemService.createNewTask(taskItemDTO, principal.getName()).get();
         return CompletableFuture.completedFuture(new ResponseEntity<>(taskItemDTO, HttpStatus.OK));
     }
 }

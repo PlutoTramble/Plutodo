@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Entity

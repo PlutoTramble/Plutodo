@@ -1,11 +1,15 @@
 package org.plutotramble.task;
 
 import org.plutotramble.authentication.UserAccountRepository;
+import org.plutotramble.category.CategoryRepository;
 import org.plutotramble.shared.entities.TaskItemEntity;
+import org.plutotramble.shared.exceptions.InvalidItemPropertyException;
 import org.plutotramble.shared.exceptions.ItemNotFoundException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -18,9 +22,12 @@ public class TaskItemService {
 
     private final UserAccountRepository userRepository;
 
-    public TaskItemService(TaskItemRepository taskItemRepository, UserAccountRepository userRepository) {
+    private final CategoryRepository categoryRepository;
+
+    public TaskItemService(TaskItemRepository taskItemRepository, UserAccountRepository userRepository, CategoryRepository categoryRepository) {
         this.taskItemRepository = taskItemRepository;
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Async
@@ -65,6 +72,41 @@ public class TaskItemService {
         }
 
         return CompletableFuture.completedFuture(convertFromEntity(task));
+    }
+
+    @Async
+    public CompletableFuture<TaskItemDTO> createNewTask(TaskItemDTO taskReceived, String username) throws InvalidItemPropertyException, ExecutionException, InterruptedException {
+        UUID userId = getUserUUIDByName(username).get();
+
+        // Verification
+        if(taskReceived.name.length() > 30) {
+            throw new InvalidItemPropertyException("Task's name is too long. Maximum length is 30");
+        }
+        if(taskReceived.categoryId == null) {
+            throw new InvalidItemPropertyException("Task needs to be affiliated to a category");
+        }
+        if(categoryRepository.existsCategoryEntityByUserAccount_Id(userId).get()) {
+            throw new InvalidItemPropertyException("Task needs to be affiliated to a category");
+        }
+        if(taskReceived.description.length() > 8192) {
+            throw new InvalidItemPropertyException("Task's description is too long. Maximum length is 8192");
+        }
+
+        // Create entity
+        TaskItemEntity task = new TaskItemEntity();
+        task.setName(taskReceived.name);
+        task.setDescription(taskReceived.description);
+        task.setFinished(taskReceived.isFinished);
+        task.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
+        task.setDateDue(Timestamp.valueOf(taskReceived.dateDue));
+        task.setCategory(categoryRepository.findById(taskReceived.categoryId).get());
+
+        taskItemRepository.save(task);
+
+        taskReceived.id = task.getId();
+        taskReceived.dateCreated = task.getDateCreated().toLocalDateTime();
+
+        return CompletableFuture.completedFuture(taskReceived);
     }
 
     private TaskItemDTO convertFromEntity(TaskItemEntity task){
