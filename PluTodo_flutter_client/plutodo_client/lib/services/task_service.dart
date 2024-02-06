@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:plutodo_client/injection.dart';
 import 'package:plutodo_client/models/category.dart';
 import 'package:plutodo_client/models/task.dart';
@@ -50,7 +51,7 @@ class TaskService {
   Future<List<Task>> getTodosFromCategory(String id) async {
     try{
       List<Task> tasks = await _httpService.fetchTasksFromCategoryId(id);
-      tasks.removeWhere((element) => element.finished);
+      tasks.removeWhere((element) => element.isFinished);
       tasks.sort((a, b) {
         return DateTime.parse(a.dateDue ?? DateTime.utc(3000).toString())
             .compareTo(DateTime.parse(b.dateDue ?? DateTime.utc(3000).toString()));
@@ -66,7 +67,7 @@ class TaskService {
   Future<List<Task>> getAllTodos() async {
     try{
       List<Task> tasks = await _httpService.fetchAllTasks();
-      tasks.removeWhere((element) => element.finished);
+      tasks.removeWhere((element) => element.isFinished);
       tasks.sort((a, b) {
         return DateTime.parse(a.dateDue ?? DateTime.utc(3000).toString())
             .compareTo(DateTime.parse(b.dateDue ?? DateTime.utc(3000).toString()));
@@ -82,7 +83,7 @@ class TaskService {
   Future<List<Task>> getAllFinishedTodos() async {
     try{
       List<Task> tasks = await _httpService.fetchAllTasks();
-      tasks.removeWhere((element) => !element.finished);
+      tasks.removeWhere((element) => !element.isFinished);
       tasks.sort((a, b) {
         return DateTime.parse(a.dateDue ?? DateTime.utc(3000).toString())
             .compareTo(DateTime.parse(b.dateDue ?? DateTime.utc(3000).toString()));
@@ -122,6 +123,10 @@ class TaskService {
     catch(e) {
       rethrow;
     }
+  }
+
+  String dateTimeDisplay(String date) {
+    return DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.parse(date));
   }
 
   bool isMobile(BuildContext context){

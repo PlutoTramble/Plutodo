@@ -10,7 +10,7 @@ class Task {
   late String id;
   late String name;
   late String? description;
-  late bool finished;
+  late bool isFinished;
   late String dateCreated;
   late String? dateDue;
   late String? categoryId;
@@ -35,7 +35,7 @@ class Task {
         ..id = id
         ..name = name
         ..description = description
-        ..finished = finished
+        ..isFinished = finished
         ..dateDue = dateDue
         ..dateCreated = DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now())
         ..categoryId = categoryId;

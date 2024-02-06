@@ -138,7 +138,7 @@ class _TaskListInterface extends State<TaskListInterface> {
 
   void _setTaskAsFinished(int index, bool value) async {
     try{
-      _tasks[index].finished = value;
+      _tasks[index].isFinished = value;
       await widget._taskService.editTask(_tasks[index]);
 
       setState(() => _tasks);
@@ -232,7 +232,7 @@ class _TaskListInterface extends State<TaskListInterface> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Checkbox(
-                          value: _tasks[index].finished,
+                          value: _tasks[index].isFinished,
                           onChanged: (bool) {
                             _setTaskAsFinished(index, bool!);
                           }
@@ -242,7 +242,7 @@ class _TaskListInterface extends State<TaskListInterface> {
                         child: Text(
                           "${_tasks[index].name}"
                               "${_tasks[index].dateDue != null
-                                ? '\nDate due : ${_tasks[index].dateDue!}'
+                                ? '\nDate due : ${widget._taskService.dateTimeDisplay(_tasks[index].dateDue!)}'
                                 : ""}",
                           textScaler: const TextScaler.linear(1.2),
                           textAlign: TextAlign.start,
