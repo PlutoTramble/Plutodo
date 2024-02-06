@@ -1,5 +1,6 @@
 package org.plutotramble.task;
 
+import org.plutotramble.shared.exceptions.ItemNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -25,16 +26,23 @@ public class TaskItemController {
     }
 
     @Async
-    @GetMapping(value = "/getTasksFromCategory/")
+    @GetMapping(value = "/getTasksFromCategory")
     public CompletableFuture<ResponseEntity<List<TaskItemDTO>>> getTasksFromCategoru(@RequestParam UUID categoryId, Principal principal) throws ExecutionException, InterruptedException {
         List<TaskItemDTO> tasks = taskItemService.taskItemsByCategory(categoryId, principal.getName()).get();
         return CompletableFuture.completedFuture(new ResponseEntity<>(tasks, HttpStatus.OK));
     }
 
     @Async
-    @GetMapping(value = "/getSmallTasksFromCategory/")
-    public CompletableFuture<ResponseEntity<List<SmallTaskItemDTO>>> getSmallTassFromCategoru(@RequestParam UUID categoryId, Principal principal) throws ExecutionException, InterruptedException {
+    @GetMapping(value = "/getSmallTasksFromCategory")
+    public CompletableFuture<ResponseEntity<List<SmallTaskItemDTO>>> getSmallTasksFromCategoru(@RequestParam UUID categoryId, Principal principal) throws ExecutionException, InterruptedException {
         List<SmallTaskItemDTO> tasks = taskItemService.smallTaskItemsByCategory(categoryId, principal.getName()).get();
         return CompletableFuture.completedFuture(new ResponseEntity<>(tasks, HttpStatus.OK));
+    }
+
+    @Async
+    @GetMapping(value = "/getTaskDetail")
+    public CompletableFuture<ResponseEntity<TaskItemDTO>> getTaskDetail(@RequestParam SmallTaskItemDTO task, Principal principal) throws ExecutionException, InterruptedException, ItemNotFoundException {
+        TaskItemDTO taskItemDTO = taskItemService.taskItemDetail(task.id, principal.getName()).get();
+        return CompletableFuture.completedFuture(new ResponseEntity<>(taskItemDTO, HttpStatus.OK));
     }
 }
