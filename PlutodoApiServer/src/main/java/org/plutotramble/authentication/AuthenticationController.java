@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -45,10 +46,20 @@ public class AuthenticationController {
     public CompletableFuture<ResponseEntity<Object>> Register(@RequestBody RegisterDTO registerDTO) throws ExecutionException, InterruptedException {
         authenticationService.CreateUser(registerDTO);
 
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.username = registerDTO.username;
-        loginDTO.password = registerDTO.password;
+        UsernamePasswordAuthenticationToken authReq
+                = new UsernamePasswordAuthenticationToken(registerDTO.username, registerDTO.password);
+        Authentication auth = authenticationManager.authenticate(authReq);
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
-        return CompletableFuture.completedFuture(login(loginDTO).get());
+        return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.OK));
+    }
+
+    @Async
+    @GetMapping(value = "/getUsername")
+    CompletableFuture<ResponseEntity<String>> getUsername(Principal principal) {
+        if(principal == null){
+            return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.FORBIDDEN));
+        }
+        return CompletableFuture.completedFuture(new ResponseEntity<>(principal.getName(), HttpStatus.OK));
     }
 }

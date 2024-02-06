@@ -35,6 +35,18 @@ class _LoginInterface extends State<LoginInterface> {
       showMessage(e.toString());
     }
   }
+
+  Future<void> checkIfConnected() async {
+    try{
+      await widget._authenticationService.getUsernameIfAuth();
+
+      _popAndGo('/Plutodo');
+    }
+    catch(e){
+      // do nothing
+      return;
+    }
+  }
   
   void showMessage(String message){
     SnackBar snackBar = SnackBar(
@@ -50,6 +62,7 @@ class _LoginInterface extends State<LoginInterface> {
 
   @override
   void initState() {
+    checkIfConnected();
     super.initState();
   }
 

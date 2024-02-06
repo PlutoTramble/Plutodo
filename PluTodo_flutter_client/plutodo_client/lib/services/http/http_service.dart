@@ -41,6 +41,20 @@ class HttpService {
     }
   }
 
+  Future<String> checkConnection() async {
+    try{
+      var response = await dio.get(
+          '$_url/Authentication/getUsername',
+          options: Options(headers: _header)
+      );
+
+      return (response.data as String);
+    }
+    catch(e){
+      rethrow;
+    }
+  }
+
   Future<List<Category>> fetchAllCategories() async {
     try {
       var response = await dio.get(

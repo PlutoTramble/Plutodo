@@ -45,6 +45,17 @@ class AuthenticationService {
     }
   }
 
+  Future<String?> getUsernameIfAuth() async {
+    try {
+      User().username = await _httpService.checkConnection();
+
+      return User().username;
+    }
+    catch(e){
+      rethrow;
+    }
+  }
+
   String errorHandling(String message) {
     switch(message){
       case "IncorrectUsernameOrPassword":
