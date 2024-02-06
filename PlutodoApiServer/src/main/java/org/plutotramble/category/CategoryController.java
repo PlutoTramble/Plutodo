@@ -37,6 +37,13 @@ public class CategoryController {
     }
 
     @Async
+    @PutMapping(value = "/edit")
+    public CompletableFuture<ResponseEntity<CategoryDTO>> edit(@RequestBody CategoryDTO categoryDTO, Principal principal) throws InvalidItemPropertyException, ExecutionException, InterruptedException, ItemNotFoundException {
+        categoryDTO = categoryService.editCategory(categoryDTO, principal.getName()).get();
+        return CompletableFuture.completedFuture(new ResponseEntity<>(categoryDTO, HttpStatus.OK));
+    }
+
+    @Async
     @DeleteMapping(value = "/delete")
     public CompletableFuture<ResponseEntity<Object>> delete(@RequestBody CategoryDTO categoryDTO, Principal principal) throws ExecutionException, InterruptedException, ItemNotFoundException {
         categoryService.deleteCategory(principal.getName(), categoryDTO.id);

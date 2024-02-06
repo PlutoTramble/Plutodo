@@ -1,6 +1,5 @@
 package org.plutotramble.category;
 
-import org.modelmapper.ModelMapper;
 import org.plutotramble.authentication.UserAccountRepository;
 import org.plutotramble.shared.exceptions.InvalidItemPropertyException;
 import org.plutotramble.shared.exceptions.ItemNotFoundException;
@@ -48,15 +47,7 @@ public class CategoryService {
     @Async
     public CompletableFuture<CategoryDTO> createCategory(String username, CategoryDTO categoryDTO) throws ExecutionException, InterruptedException, InvalidItemPropertyException {
         // Verification
-        if(categoryDTO.color.length() > 7){
-            throw new InvalidItemPropertyException("Category color is too long. Maximum length is 7.");
-        }
-        if(categoryDTO.name.length() > 30) {
-            throw new InvalidItemPropertyException("Category name is too long. Maximum length is 30.");
-        }
-        if(categoryDTO.name.length() < 2) {
-            throw new InvalidItemPropertyException("Category name must be at least 2 characters.");
-        }
+        verifyCategoryProperties(categoryDTO);
 
         // Create entity
         CategoryEntity category = new CategoryEntity();
@@ -74,6 +65,30 @@ public class CategoryService {
     }
 
     @Async
+    public CompletableFuture<CategoryDTO> editCategory(CategoryDTO categoryDTO, String username) throws InvalidItemPropertyException, ExecutionException, InterruptedException, ItemNotFoundException {
+        UUID userId = getUserUUIDByName(username).get();
+
+        // Verification
+        verifyCategoryProperties(categoryDTO);
+
+        // Edit entity
+        CategoryEntity category = categoryRepository.getCategoryEntityByIdAndUserAccount_Id(categoryDTO.id, userId).get();
+
+        if(category == null) {
+            throw new ItemNotFoundException("Category not found");
+        }
+
+        category.setColor(categoryDTO.color);
+        category.setName(categoryDTO.name);
+
+        categoryRepository.save(category);
+
+        categoryDTO.dateCreated = category.getDateCreated().toLocalDateTime();
+
+        return CompletableFuture.completedFuture(categoryDTO);
+    }
+
+    @Async
     public void deleteCategory(String username, UUID categoryId) throws ExecutionException, InterruptedException, ItemNotFoundException {
         UUID userId = getUserUUIDByName(username).get();
 
@@ -84,6 +99,18 @@ public class CategoryService {
         }
 
         categoryRepository.deleteById(categoryId);
+    }
+
+    private void verifyCategoryProperties(CategoryDTO categoryDTO) throws InvalidItemPropertyException {
+        if(categoryDTO.color.length() > 7){
+            throw new InvalidItemPropertyException("Category color is too long. Maximum length is 7.");
+        }
+        if(categoryDTO.name.length() > 30) {
+            throw new InvalidItemPropertyException("Category name is too long. Maximum length is 30.");
+        }
+        if(categoryDTO.name.length() < 2) {
+            throw new InvalidItemPropertyException("Category name must be at least 2 characters.");
+        }
     }
 
     @Async

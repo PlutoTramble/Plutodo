@@ -75,22 +75,11 @@ public class TaskItemService {
     }
 
     @Async
-    public CompletableFuture<TaskItemDTO> createNewTask(TaskItemDTO taskReceived, String username) throws InvalidItemPropertyException, ExecutionException, InterruptedException {
+    public CompletableFuture<TaskItemDTO> createNewTask(TaskItemDTO taskReceived, String username) throws InvalidItemPropertyException, ExecutionException, InterruptedException, ItemNotFoundException {
         UUID userId = getUserUUIDByName(username).get();
 
         // Verification
-        if(taskReceived.name.length() > 30) {
-            throw new InvalidItemPropertyException("Task's name is too long. Maximum length is 30");
-        }
-        if(taskReceived.categoryId == null) {
-            throw new InvalidItemPropertyException("Task needs to be affiliated to a category");
-        }
-        if(categoryRepository.existsCategoryEntityByUserAccount_Id(userId).get()) {
-            throw new InvalidItemPropertyException("Task needs to be affiliated to a category");
-        }
-        if(taskReceived.description.length() > 8192) {
-            throw new InvalidItemPropertyException("Task's description is too long. Maximum length is 8192");
-        }
+        verifyTaskProperties(taskReceived, userId);
 
         // Create entity
         TaskItemEntity task = new TaskItemEntity();
@@ -109,6 +98,34 @@ public class TaskItemService {
         return CompletableFuture.completedFuture(taskReceived);
     }
 
+    @Async
+    public CompletableFuture<TaskItemDTO> editTask(TaskItemDTO taskItemDTO, String username) throws ExecutionException, InterruptedException, InvalidItemPropertyException, ItemNotFoundException {
+        UUID userId = getUserUUIDByName(username).get();
+
+        // Verification
+        verifyTaskProperties(taskItemDTO, userId);
+
+        // Edit entity
+        TaskItemEntity task =
+                taskItemRepository.getTaskItemEntityByIdAndCategory_UserAccount_Id(taskItemDTO.id, userId).get();
+
+        if(task == null) {
+            throw new ItemNotFoundException("TaskItem not found");
+        }
+
+        task.setName(taskItemDTO.name);
+        task.setDateDue(Timestamp.valueOf(taskItemDTO.dateDue));
+        task.setFinished(taskItemDTO.isFinished);
+        task.setDescription(taskItemDTO.description);
+
+        taskItemRepository.save(task);
+
+        taskItemDTO.dateCreated = task.getDateCreated().toLocalDateTime();
+
+        return CompletableFuture.completedFuture(taskItemDTO);
+    }
+
+    @Async
     public void deleteTask(UUID id, String username) throws ExecutionException, InterruptedException, ItemNotFoundException {
         UUID userId = getUserUUIDByName(username).get();
 
@@ -120,6 +137,21 @@ public class TaskItemService {
         }
 
         taskItemRepository.delete(task);
+    }
+
+    private void verifyTaskProperties(TaskItemDTO taskItemDTO, UUID userId) throws InvalidItemPropertyException, InterruptedException, ExecutionException, ItemNotFoundException {
+        if(taskItemDTO.name.length() > 30) {
+            throw new InvalidItemPropertyException("Task's name is too long. Maximum length is 30");
+        }
+        if(taskItemDTO.categoryId == null) {
+            throw new InvalidItemPropertyException("Task needs to be affiliated to a category");
+        }
+        if(categoryRepository.existsCategoryEntityByUserAccount_Id(userId).get()) {
+            throw new ItemNotFoundException("Category doesn't exist.");
+        }
+        if(taskItemDTO.description.length() > 8192) {
+            throw new InvalidItemPropertyException("Task's description is too long. Maximum length is 8192");
+        }
     }
 
     private TaskItemDTO convertFromEntity(TaskItemEntity task){

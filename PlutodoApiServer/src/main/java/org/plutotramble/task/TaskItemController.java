@@ -46,8 +46,15 @@ public class TaskItemController {
 
     @Async
     @PostMapping(value = "/add")
-    public CompletableFuture<ResponseEntity<TaskItemDTO>> add(@RequestBody TaskItemDTO taskItemDTO, Principal principal) throws InvalidItemPropertyException, ExecutionException, InterruptedException {
+    public CompletableFuture<ResponseEntity<TaskItemDTO>> add(@RequestBody TaskItemDTO taskItemDTO, Principal principal) throws InvalidItemPropertyException, ExecutionException, InterruptedException, ItemNotFoundException {
         taskItemDTO = taskItemService.createNewTask(taskItemDTO, principal.getName()).get();
+        return CompletableFuture.completedFuture(new ResponseEntity<>(taskItemDTO, HttpStatus.OK));
+    }
+
+    @Async
+    @PutMapping(value = "/edit")
+    public CompletableFuture<ResponseEntity<TaskItemDTO>> edit(@RequestBody TaskItemDTO taskItemDTO, Principal principal) throws InvalidItemPropertyException, ExecutionException, InterruptedException, ItemNotFoundException {
+        taskItemDTO = taskItemService.editTask(taskItemDTO, principal.getName()).get();
         return CompletableFuture.completedFuture(new ResponseEntity<>(taskItemDTO, HttpStatus.OK));
     }
 
