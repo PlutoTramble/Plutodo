@@ -109,6 +109,19 @@ public class TaskItemService {
         return CompletableFuture.completedFuture(taskReceived);
     }
 
+    public void deleteTask(UUID id, String username) throws ExecutionException, InterruptedException, ItemNotFoundException {
+        UUID userId = getUserUUIDByName(username).get();
+
+        TaskItemEntity task =
+                taskItemRepository.getTaskItemEntityByIdAndCategory_UserAccount_Id(id, userId).get();
+
+        if(task == null) {
+            throw new ItemNotFoundException("Task not found");
+        }
+
+        taskItemRepository.delete(task);
+    }
+
     private TaskItemDTO convertFromEntity(TaskItemEntity task){
         TaskItemDTO dto = new TaskItemDTO();
         dto.id = task.getId();

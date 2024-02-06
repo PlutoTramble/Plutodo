@@ -50,4 +50,11 @@ public class TaskItemController {
         taskItemDTO = taskItemService.createNewTask(taskItemDTO, principal.getName()).get();
         return CompletableFuture.completedFuture(new ResponseEntity<>(taskItemDTO, HttpStatus.OK));
     }
+
+    @Async
+    @DeleteMapping(value = "/delete")
+    public CompletableFuture<ResponseEntity<Object>> delete(@RequestBody TaskItemDTO taskItemDTO, Principal principal) throws ExecutionException, InterruptedException, ItemNotFoundException {
+        taskItemService.deleteTask(taskItemDTO.id, principal.getName());
+        return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.OK));
+    }
 }
