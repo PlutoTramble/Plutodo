@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:plutodo_client/models/category.dart';
 
 class CategoryDialog extends StatefulWidget {
-  CategoryDialog({super.key, this.category, required this.ordering});
+  const CategoryDialog({super.key, this.category, required this.color});
 
   final Category? category;
-  final int ordering;
+  final String color;
 
   @override
   State<CategoryDialog> createState() => _CategoryDialog();
@@ -30,9 +30,9 @@ class _CategoryDialog extends State<CategoryDialog> {
     Category category;
     if(widget.category == null) {
       category = Category.init(
-          0,
+          "",
           categoryNameController.value.text,
-          widget.ordering
+          widget.color
       );
     }
     else {

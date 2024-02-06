@@ -6,9 +6,9 @@ part 'category.g.dart';
 class Category {
   Category();
 
-  late int id;
+  late String? id;
   late String name;
-  late int ordering;
+  late String color;
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   late bool selected = false;
@@ -16,10 +16,9 @@ class Category {
   factory Category.fromJson(Map<String, dynamic> json) => _$CategoryFromJson(json);
   Map<String, dynamic> toJson() => _$CategoryToJson(this);
 
-  factory Category.init(int id, String name, int ordering) =>
+  factory Category.init(String id, String name, String color) =>
     Category()
       ..id = id
       ..name = name
-      ..ordering = ordering;
-
+      ..color = color;
 }

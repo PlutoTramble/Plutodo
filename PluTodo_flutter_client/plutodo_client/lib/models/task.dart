@@ -7,14 +7,13 @@ part 'task.g.dart';
 class Task {
   Task();
 
-  late int id;
+  late String id;
   late String name;
   late String? description;
-  late bool finished;
+  late bool isFinished;
   late String dateCreated;
   late String? dateDue;
-  late int ordering;
-  late int? categoryId;
+  late String? categoryId;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool isNew = false;
@@ -26,20 +25,18 @@ class Task {
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 
   factory Task.init(
-      int id,
+      String id,
       String name,
       String? description,
       bool finished,
       String? dateDue,
-      int ordering,
-      int? categoryId) =>
+      String? categoryId) =>
       Task()
         ..id = id
         ..name = name
         ..description = description
-        ..finished = finished
+        ..isFinished = finished
         ..dateDue = dateDue
-        ..dateCreated = DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now())
-        ..ordering = ordering
+        ..dateCreated = DateFormat("yyyy-MM-dd'T'HH:mm:ss'.000000'").format(DateTime.now())
         ..categoryId = categoryId;
 }

@@ -9,7 +9,7 @@ class TaskListInterface extends StatefulWidget {
   TaskListInterface({super.key, required this.selectedCategoryId}) {}
   final TaskService _taskService = getIt<TaskService>();
 
-  final ValueListenable<int> selectedCategoryId;
+  final ValueListenable<String> selectedCategoryId;
   final ValueNotifier<Task?> selectedTask = ValueNotifier<Task?>(null);
 
   @override
@@ -20,19 +20,19 @@ class _TaskListInterface extends State<TaskListInterface> {
   List<Task> _tasks = [];
   bool isRealCategory = false;
 
-  Future<void> getFromCategory() async {
+  Future<void> getFromCategory(String id) async {
     isRealCategory = true;
     _tasks = await widget._taskService
-        .getTodosFromCategory(widget.selectedCategoryId.value);
+        .getTodosFromCategory(id);
   }
 
-  Future<void> getFromBasic(int id) async {
+  Future<void> getFromBasic(String id) async {
     isRealCategory = false;
     switch(id){
-      case(-3):
+      case("-3"):
         _tasks = await widget._taskService.getAllTodos();
         break;
-      case(-1):
+      case("-1"):
         _tasks = await widget._taskService.getAllFinishedTodos();
         break;
     }
@@ -41,12 +41,11 @@ class _TaskListInterface extends State<TaskListInterface> {
   void setupNewTask() {
     widget.selectedTask.value =
         Task.init(
-            0,
+            "",
             "",
             null,
             false,
-            DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now()),
-            _tasks.length + 1,
+            null,
             widget.selectedCategoryId.value
         );
 
@@ -60,19 +59,23 @@ class _TaskListInterface extends State<TaskListInterface> {
   }
 
   Future<void> getTodos() async {
-    int categoryId = widget.selectedCategoryId.value;
+    String categoryId = widget.selectedCategoryId.value;
 
-    bool isFromCategory = categoryId >= 0;
-    bool isFromBasic = categoryId <= -1 && categoryId >=-3;
-
-    if(isFromCategory) {
-      await getFromCategory();
+    if(categoryId.isEmpty) {
+      setState(() {
+        _tasks = [];
+        isRealCategory = false;
+      });
+      return;
     }
-    else if(isFromBasic) {
+
+    bool isFromBasic = categoryId == "-1" || categoryId == "-3";
+
+    if(!isFromBasic) {
+      await getFromCategory(categoryId);
+    }
+    else {
       await getFromBasic(categoryId);
-    }
-    else{
-      _tasks = [];
     }
 
     widget.selectedTask.value = null;
@@ -84,7 +87,7 @@ class _TaskListInterface extends State<TaskListInterface> {
   }
 
   void selectTask(int index) {
-    int id = _tasks[index].id;
+    String id = _tasks[index].id;
 
     if(widget.selectedTask.value?.id == _tasks[index].id ||
         widget.selectedTask.value != null){
@@ -143,7 +146,7 @@ class _TaskListInterface extends State<TaskListInterface> {
 
   void _setTaskAsFinished(int index, bool value) async {
     try{
-      _tasks[index].finished = value;
+      _tasks[index].isFinished = value;
       await widget._taskService.editTask(_tasks[index]);
 
       setState(() => _tasks);
@@ -237,7 +240,7 @@ class _TaskListInterface extends State<TaskListInterface> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Checkbox(
-                          value: _tasks[index].finished,
+                          value: _tasks[index].isFinished,
                           onChanged: (bool) {
                             _setTaskAsFinished(index, bool!);
                           }
@@ -247,7 +250,7 @@ class _TaskListInterface extends State<TaskListInterface> {
                         child: Text(
                           "${_tasks[index].name}"
                               "${_tasks[index].dateDue != null
-                                ? '\nDate due : ${_tasks[index].dateDue!}'
+                                ? '\nDate due : ${widget._taskService.dateTimeDisplay(_tasks[index].dateDue!)}'
                                 : ""}",
                           textScaler: const TextScaler.linear(1.2),
                           textAlign: TextAlign.start,

@@ -21,7 +21,7 @@ class AuthenticationService {
     }
     on DioException catch(e) {
       throw errorHandling(
-          ErrorMessage.fromJson(e.response?.data).message!
+          ErrorMessage.fromJson(e.response?.data).error
       );
     }
     catch(e){
@@ -37,7 +37,7 @@ class AuthenticationService {
     }
     on DioException catch(e) {
       throw errorHandling(
-          ErrorMessage.fromJson(e.response?.data).message!
+          ErrorMessage.fromJson(e.response?.data).error
       );
     }
     catch(e){

@@ -8,7 +8,7 @@ part 'error_message.g.dart';
 class ErrorMessage {
   ErrorMessage();
 
-  late String message;
+  late String error;
 
   factory ErrorMessage.fromJson(Map<String, dynamic> json) => _$ErrorMessageFromJson(json);
 }

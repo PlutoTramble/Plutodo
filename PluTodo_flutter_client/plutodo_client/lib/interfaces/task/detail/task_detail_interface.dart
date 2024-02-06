@@ -1,11 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:plutodo_client/injection.dart';
 import 'package:plutodo_client/interfaces/task/detail/detail_interface_state.dart';
 import 'package:plutodo_client/interfaces/task/detail/task_state.dart';
 import 'package:plutodo_client/models/task.dart';
 import 'package:intl/intl.dart';
+import 'package:plutodo_client/services/task_service.dart';
+
 class TaskDetailInterface extends StatefulWidget {
   TaskDetailInterface({super.key, required this.selectedTask, required this.isMobile}) {}
+  final TaskService _taskService = getIt<TaskService>();
 
   final ValueListenable<Task?> selectedTask;
   final ValueNotifier<TaskState> taskDetailState =
@@ -29,7 +33,7 @@ class _TaskDetailInterface extends State<TaskDetailInterface> {
       _task = widget.selectedTask.value!;
     }
 
-    if(_task.name == "") {
+    if(_task.name.isEmpty) {
       _isNewTask = true;
     }
 
@@ -44,15 +48,15 @@ class _TaskDetailInterface extends State<TaskDetailInterface> {
     if(value == null || value.isEmpty){
       return "Task name needs to be filled";
     }
-    if(value.length > 250){
-      return "Task name needs to be under 250 characters";
+    if(value.length > 100){
+      return "Task name needs to be under 100 characters";
     }
     return null;
   }
 
   String? _validateDescription(String? value) {
-    if(value != null && value.length > 8000){
-      return "Task name needs to be under 8000 characters";
+    if(value != null && value.length > 8192){
+      return "Task name needs to be under 8192 characters";
     }
     return null;
   }
@@ -71,16 +75,18 @@ class _TaskDetailInterface extends State<TaskDetailInterface> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    String dateFormat = "yyyy-MM-dd'T'HH:mm:ss'.000000'";
+
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: _task.dateDue != null
-            ? DateFormat('yyyy-MM-dd HH:mm:ss').parse(_task.dateDue!)
+            ? DateTime.parse(_task.dateDue!)
             : DateTime.now(),
         firstDate: DateTime(2010, 8),
         lastDate: DateTime(2101));
-    if (picked != null && picked != DateFormat('yyyy-MM-dd HH:mm:ss').parse(_task.dateDue!)) {
+    if (picked != null && (_task.dateDue == null || picked != DateTime.parse(_task.dateDue!))) {
       setState(() {
-        _task.dateDue = DateFormat('yyyy-MM-dd HH:mm:ss').format(picked);
+        _task.dateDue = DateFormat(dateFormat).format(picked);
       });
     }
   }
@@ -102,7 +108,7 @@ class _TaskDetailInterface extends State<TaskDetailInterface> {
     return Scaffold(
       //backgroundColor: Colors.transparent,
       body: widget.selectedTask.value != null ? Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -128,7 +134,9 @@ class _TaskDetailInterface extends State<TaskDetailInterface> {
             ),
 
             Text(
-                "Date due : ${_task.dateDue ?? "None"}",
+                "Date due : ${_task.dateDue != null ?
+                              widget._taskService.dateTimeDisplay(_task.dateDue!) :
+                              "None"}",
                 textScaler: const TextScaler.linear(1.3),
             ),
 
