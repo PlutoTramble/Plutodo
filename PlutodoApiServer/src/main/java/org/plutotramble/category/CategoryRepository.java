@@ -1,5 +1,6 @@
 package org.plutotramble.category;
 
+import org.plutotramble.shared.entities.CategoryEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.scheduling.annotation.Async;
 
@@ -10,11 +11,11 @@ import java.util.concurrent.Future;
 public interface CategoryRepository extends CrudRepository<CategoryEntity, Object> {
 
     @Async
-    Future<List<CategoryEntity>> getCategoryEntitiesByUserAccountIdOrderByName(UUID userAccountId);
+    Future<List<CategoryEntity>> getCategoryEntitiesByUserAccount_IdOrderByName(UUID userAccountId);
 
     @Async
     Future<CategoryEntity> getCategoryEntityByNameContaining(String name);
 
     @Async
-    Future<CategoryEntity> getCategoryEntityByIdAndUserAccountId(UUID id, UUID userAccountId);
+    Future<CategoryEntity> getCategoryEntityByIdAndUserAccount_Id(UUID id, UUID userAccountId);
 }

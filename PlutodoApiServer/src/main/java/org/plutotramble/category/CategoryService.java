@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.plutotramble.authentication.UserAccountRepository;
 import org.plutotramble.shared.exceptions.InvalidItemPropertyException;
 import org.plutotramble.shared.exceptions.ItemNotFoundException;
+import org.plutotramble.shared.entities.CategoryEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +21,6 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    private final ModelMapper modelMapper = new ModelMapper();
-
     public CategoryService(UserAccountRepository userRepository,
                            CategoryRepository categoryRepository) {
         this.userRepository = userRepository;
@@ -32,7 +31,7 @@ public class CategoryService {
     public CompletableFuture<List<CategoryDTO>> categoriesByUserName(String username) throws ExecutionException, InterruptedException {
         UUID userId = getUserUUIDByName(username).get();
 
-        List<CategoryEntity> categories = categoryRepository.getCategoryEntitiesByUserAccountIdOrderByName(userId).get();
+        List<CategoryEntity> categories = categoryRepository.getCategoryEntitiesByUserAccount_IdOrderByName(userId).get();
 
         List<CategoryDTO> categoriesDTO = categories.stream().map(category -> {
             CategoryDTO dto = new CategoryDTO();
@@ -60,13 +59,11 @@ public class CategoryService {
         }
 
         // Create entity
-        UUID userId = getUserUUIDByName(username).get();
-
         CategoryEntity category = new CategoryEntity();
         category.setName(categoryDTO.name);
         category.setColor(categoryDTO.color);
         category.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
-        category.setUserAccountId(userId);
+        category.setUserAccount(userRepository.findByUsername(username).get());
 
         categoryRepository.save(category);
 
@@ -80,7 +77,7 @@ public class CategoryService {
     public void deleteCategory(String username, UUID categoryId) throws ExecutionException, InterruptedException, ItemNotFoundException {
         UUID userId = getUserUUIDByName(username).get();
 
-        CategoryEntity category = categoryRepository.getCategoryEntityByIdAndUserAccountId(categoryId, userId).get();
+        CategoryEntity category = categoryRepository.getCategoryEntityByIdAndUserAccount_Id(categoryId, userId).get();
 
         if(category == null){
             throw new ItemNotFoundException("Category not found");

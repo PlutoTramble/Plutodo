@@ -1,4 +1,4 @@
-package org.plutotramble.calendar;
+package org.plutotramble.shared.entities;
 
 import jakarta.persistence.*;
 
@@ -7,33 +7,33 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "calendar_event", schema = "public", catalog = "PlutodoDBDevJava")
+@Table(name = "calendar_event", schema = "public", catalog = "javadevplutodo")
 public class CalendarEventEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private UUID id;
     @Basic
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, length = 30)
     private String name;
     @Basic
-    @Column(name = "description")
+    @Column(name = "description", nullable = true, length = 8192)
     private String description;
     @Basic
-    @Column(name = "date_created")
+    @Column(name = "date_created", nullable = false)
     private Timestamp dateCreated;
     @Basic
-    @Column(name = "date_from")
+    @Column(name = "date_from", nullable = false)
     private Timestamp dateFrom;
     @Basic
-    @Column(name = "date_to")
+    @Column(name = "date_to", nullable = true)
     private Timestamp dateTo;
     @Basic
-    @Column(name = "is_whole_day")
+    @Column(name = "is_whole_day", nullable = false)
     private boolean isWholeDay;
-    @Basic
-    @Column(name = "category_id")
-    private UUID categoryId;
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
+    private CategoryEntity category;
 
     public UUID getId() {
         return id;
@@ -91,24 +91,24 @@ public class CalendarEventEntity {
         isWholeDay = wholeDay;
     }
 
-    public UUID getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(UUID categoryId) {
-        this.categoryId = categoryId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CalendarEventEntity that = (CalendarEventEntity) o;
-        return isWholeDay == that.isWholeDay && Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(dateCreated, that.dateCreated) && Objects.equals(dateFrom, that.dateFrom) && Objects.equals(dateTo, that.dateTo) && Objects.equals(categoryId, that.categoryId);
+        return isWholeDay == that.isWholeDay && Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(dateCreated, that.dateCreated) && Objects.equals(dateFrom, that.dateFrom) && Objects.equals(dateTo, that.dateTo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, dateCreated, dateFrom, dateTo, isWholeDay, categoryId);
+        return Objects.hash(id, name, description, dateCreated, dateFrom, dateTo, isWholeDay);
+    }
+
+    public CategoryEntity getCategory() {
+        return category;
+    }
+
+    public void setCategory(CategoryEntity category) {
+        this.category = category;
     }
 }

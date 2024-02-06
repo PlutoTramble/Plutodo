@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping(value = "/Category")
+@RequestMapping(value = "/api/Category")
 public class CategoryController {
 
     private final CategoryService categoryService;

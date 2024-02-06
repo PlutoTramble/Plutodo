@@ -1,4 +1,4 @@
-package org.plutotramble.task;
+package org.plutotramble.shared.entities;
 
 import jakarta.persistence.*;
 
@@ -7,30 +7,30 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "task_item", schema = "public", catalog = "PlutodoDBDevJava")
+@Table(name = "task_item", schema = "public", catalog = "javadevplutodo")
 public class TaskItemEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private UUID id;
     @Basic
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, length = 30)
     private String name;
     @Basic
-    @Column(name = "description")
+    @Column(name = "description", nullable = true, length = 8192)
     private String description;
     @Basic
-    @Column(name = "is_finished")
+    @Column(name = "is_finished", nullable = true)
     private Boolean isFinished;
     @Basic
-    @Column(name = "date_created")
+    @Column(name = "date_created", nullable = false)
     private Timestamp dateCreated;
     @Basic
-    @Column(name = "date_due")
+    @Column(name = "date_due", nullable = true)
     private Timestamp dateDue;
-    @Basic
-    @Column(name = "category_id")
-    private UUID categoryId;
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
+    private CategoryEntity category;
 
     public UUID getId() {
         return id;
@@ -80,24 +80,24 @@ public class TaskItemEntity {
         this.dateDue = dateDue;
     }
 
-    public UUID getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(UUID categoryId) {
-        this.categoryId = categoryId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TaskItemEntity that = (TaskItemEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(isFinished, that.isFinished) && Objects.equals(dateCreated, that.dateCreated) && Objects.equals(dateDue, that.dateDue) && Objects.equals(categoryId, that.categoryId);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(isFinished, that.isFinished) && Objects.equals(dateCreated, that.dateCreated) && Objects.equals(dateDue, that.dateDue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, isFinished, dateCreated, dateDue, categoryId);
+        return Objects.hash(id, name, description, isFinished, dateCreated, dateDue);
+    }
+
+    public CategoryEntity getCategory() {
+        return category;
+    }
+
+    public void setCategory(CategoryEntity category) {
+        this.category = category;
     }
 }

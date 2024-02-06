@@ -1,6 +1,6 @@
 package org.plutotramble.shared;
 
-import org.plutotramble.authentication.UserAccountEntity;
+import org.plutotramble.shared.entities.UserAccountEntity;
 import org.plutotramble.authentication.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;

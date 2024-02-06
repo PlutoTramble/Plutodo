@@ -97,6 +97,7 @@ CREATE OR REPLACE TRIGGER calendar_event_delete
     FOR EACH ROW
     EXECUTE FUNCTION log_deleted_calendar_event();
 
+
 -- Task Item
 CREATE OR REPLACE FUNCTION log_deleted_task_item()
     RETURNS TRIGGER
@@ -114,6 +115,7 @@ CREATE OR REPLACE TRIGGER task_item_delete
     ON task_item
     FOR EACH ROW
     EXECUTE FUNCTION log_deleted_task_item();
+
 
 -- Category
 CREATE OR REPLACE FUNCTION log_deleted_category()
@@ -138,6 +140,7 @@ CREATE OR REPLACE TRIGGER category_delete
     ON category
     FOR EACH ROW
     EXECUTE FUNCTION log_deleted_category();
+
 
 -- UserAccount
 CREATE OR REPLACE FUNCTION log_deleted_user_account()
