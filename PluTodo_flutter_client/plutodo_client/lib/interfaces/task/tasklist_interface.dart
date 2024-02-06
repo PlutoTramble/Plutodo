@@ -20,10 +20,10 @@ class _TaskListInterface extends State<TaskListInterface> {
   List<Task> _tasks = [];
   bool isRealCategory = false;
 
-  Future<void> getFromCategory() async {
+  Future<void> getFromCategory(String id) async {
     isRealCategory = true;
     _tasks = await widget._taskService
-        .getTodosFromCategory(widget.selectedCategoryId.value);
+        .getTodosFromCategory(id);
   }
 
   Future<void> getFromBasic(String id) async {
@@ -45,7 +45,7 @@ class _TaskListInterface extends State<TaskListInterface> {
             "",
             null,
             false,
-            DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now()),
+            null,
             widget.selectedCategoryId.value
         );
 
@@ -61,12 +61,20 @@ class _TaskListInterface extends State<TaskListInterface> {
   Future<void> getTodos() async {
     String categoryId = widget.selectedCategoryId.value;
 
+    if(categoryId.isEmpty) {
+      setState(() {
+        _tasks = [];
+        isRealCategory = false;
+      });
+      return;
+    }
+
     bool isFromBasic = categoryId == "-1" || categoryId == "-3";
 
     if(!isFromBasic) {
-      await getFromCategory();
+      await getFromCategory(categoryId);
     }
-    else{
+    else {
       await getFromBasic(categoryId);
     }
 

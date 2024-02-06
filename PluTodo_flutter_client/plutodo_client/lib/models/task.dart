@@ -37,6 +37,6 @@ class Task {
         ..description = description
         ..isFinished = finished
         ..dateDue = dateDue
-        ..dateCreated = DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now())
+        ..dateCreated = DateFormat("yyyy-MM-dd'T'HH:mm:ss'.000000'").format(DateTime.now())
         ..categoryId = categoryId;
 }

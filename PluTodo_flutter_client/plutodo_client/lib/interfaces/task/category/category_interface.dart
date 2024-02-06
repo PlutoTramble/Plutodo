@@ -155,7 +155,7 @@ class _CategoyInterface extends State<CategoryInterface> {
                       onPressed: () => showDialog<String>(
                           context: context,
                           builder: (BuildContext context) =>
-                              CategoryDialog(color: "",)
+                              const CategoryDialog(color: "",)
                       ).then((value) {
                         if(value != "Cancel") {
                           _handleModifiedCategory(json.decode(value!), true);
@@ -172,7 +172,7 @@ class _CategoyInterface extends State<CategoryInterface> {
                     if(!widget._taskService.isMobile(context))
                       TextButton(
                         onPressed: selectedCategory != null &&
-                          (selectedCategory!.id != "-1" || selectedCategory!.id != "-3") ?
+                          (selectedCategory!.id != "-1" && selectedCategory!.id != "-3") ?
                         () => _editCategory(null) : null,
                         child: const Text(
                           "Edit selected\ncategory",
