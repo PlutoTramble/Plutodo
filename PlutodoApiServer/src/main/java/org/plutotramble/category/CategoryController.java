@@ -1,6 +1,5 @@
 package org.plutotramble.category;
 
-import org.plutotramble.shared.ErrorMessage;
 import org.plutotramble.shared.exceptions.InvalidItemPropertyException;
 import org.plutotramble.shared.exceptions.ItemNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -42,18 +41,5 @@ public class CategoryController {
     public CompletableFuture<ResponseEntity<Object>> delete(@RequestBody CategoryDTO categoryDTO, Principal principal) throws ExecutionException, InterruptedException, ItemNotFoundException {
         categoryService.deleteCategory(principal.getName(), categoryDTO.id);
         return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.OK));
-    }
-
-
-    @Async
-    @ExceptionHandler(value = { InvalidItemPropertyException.class })
-    protected CompletableFuture<ResponseEntity<Object>> handleInvalidItem(Exception e) {
-        return CompletableFuture.completedFuture(new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.BAD_GATEWAY));
-    }
-
-    @Async
-    @ExceptionHandler(value = { ItemNotFoundException.class })
-    protected CompletableFuture<ResponseEntity<Object>> handleItemNotFount(Exception e) {
-        return CompletableFuture.completedFuture(new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.NOT_FOUND));
     }
 }

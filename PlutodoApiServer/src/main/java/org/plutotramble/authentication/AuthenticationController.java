@@ -1,14 +1,8 @@
 package org.plutotramble.authentication;
 
 import jakarta.annotation.security.PermitAll;
-import org.plutotramble.authentication.exceptions.EmailAddressAlreadyExistsAuthenticationException;
-import org.plutotramble.authentication.exceptions.InvalidEmailAddressException;
-import org.plutotramble.authentication.exceptions.InvalidPasswordException;
-import org.plutotramble.authentication.exceptions.InvalidUsernameException;
 import org.plutotramble.authentication.dto.LoginDTO;
 import org.plutotramble.authentication.dto.RegisterDTO;
-import org.plutotramble.shared.ErrorMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -25,12 +19,12 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping(value = "/Authentication")
 public class AuthenticationController {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
     private final AuthenticationService authenticationService;
 
-    AuthenticationController(AuthenticationService authenticationService) {
+    AuthenticationController(AuthenticationService authenticationService, AuthenticationManager authenticationManager) {
         this.authenticationService = authenticationService;
+        this.authenticationManager = authenticationManager;
     }
 
     @Async
@@ -48,18 +42,13 @@ public class AuthenticationController {
     @Async
     @PermitAll
     @PostMapping(value = "/register")
-    public CompletableFuture<ResponseEntity<Object>> Register(@RequestBody RegisterDTO registerDTO){
-        try {
-            authenticationService.CreateUser(registerDTO);
-        }
-        catch (ExecutionException | InterruptedException e) {
-            return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
-        }
-        catch (InvalidPasswordException | EmailAddressAlreadyExistsAuthenticationException |
-               InvalidEmailAddressException | InvalidUsernameException e) {
-            return CompletableFuture.completedFuture(new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.BAD_REQUEST));
-        }
+    public CompletableFuture<ResponseEntity<Object>> Register(@RequestBody RegisterDTO registerDTO) throws ExecutionException, InterruptedException {
+        authenticationService.CreateUser(registerDTO);
 
-        return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.OK));
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.username = registerDTO.username;
+        loginDTO.password = registerDTO.password;
+
+        return CompletableFuture.completedFuture(login(loginDTO).get());
     }
 }
