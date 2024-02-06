@@ -36,7 +36,7 @@ class TaskService {
     }
   }
 
-  Future<bool> deleteCategory(int id) async {
+  Future<bool> deleteCategory(String id) async {
     try{
       await _httpService.removeCategory(id);
 
@@ -47,7 +47,7 @@ class TaskService {
     }
   }
 
-  Future<List<Task>> getTodosFromCategory(int id) async {
+  Future<List<Task>> getTodosFromCategory(String id) async {
     try{
       List<Task> tasks = await _httpService.fetchTasksFromCategoryId(id);
       tasks.removeWhere((element) => element.finished);
@@ -95,9 +95,9 @@ class TaskService {
     }
   }
 
-  Future<Task> addNewTask(Task task, int categoryId) async {
+  Future<Task> addNewTask(Task task, String categoryId) async {
     try{
-      return await _httpService.sendNewTask(task, categoryId);
+      return await _httpService.sendNewTask(task);
     }
     catch(e) {
       rethrow;
@@ -113,7 +113,7 @@ class TaskService {
     }
   }
 
-  Future<bool> deleteTask(int id) async {
+  Future<bool> deleteTask(String id) async {
     try{
       await _httpService.removeTask(id);
 

@@ -9,7 +9,7 @@ class TaskListInterface extends StatefulWidget {
   TaskListInterface({super.key, required this.selectedCategoryId}) {}
   final TaskService _taskService = getIt<TaskService>();
 
-  final ValueListenable<int> selectedCategoryId;
+  final ValueListenable<String> selectedCategoryId;
   final ValueNotifier<Task?> selectedTask = ValueNotifier<Task?>(null);
 
   @override
@@ -26,13 +26,13 @@ class _TaskListInterface extends State<TaskListInterface> {
         .getTodosFromCategory(widget.selectedCategoryId.value);
   }
 
-  Future<void> getFromBasic(int id) async {
+  Future<void> getFromBasic(String id) async {
     isRealCategory = false;
     switch(id){
-      case(-3):
+      case("-3"):
         _tasks = await widget._taskService.getAllTodos();
         break;
-      case(-1):
+      case("-1"):
         _tasks = await widget._taskService.getAllFinishedTodos();
         break;
     }
@@ -41,12 +41,11 @@ class _TaskListInterface extends State<TaskListInterface> {
   void setupNewTask() {
     widget.selectedTask.value =
         Task.init(
-            0,
+            "",
             "",
             null,
             false,
             DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now()),
-            _tasks.length + 1,
             widget.selectedCategoryId.value
         );
 
@@ -60,19 +59,15 @@ class _TaskListInterface extends State<TaskListInterface> {
   }
 
   Future<void> getTodos() async {
-    int categoryId = widget.selectedCategoryId.value;
+    String categoryId = widget.selectedCategoryId.value;
 
-    bool isFromCategory = categoryId >= 0;
-    bool isFromBasic = categoryId <= -1 && categoryId >=-3;
+    bool isFromBasic = categoryId == "-1" || categoryId == "-3";
 
-    if(isFromCategory) {
+    if(!isFromBasic) {
       await getFromCategory();
     }
-    else if(isFromBasic) {
-      await getFromBasic(categoryId);
-    }
     else{
-      _tasks = [];
+      await getFromBasic(categoryId);
     }
 
     widget.selectedTask.value = null;
@@ -84,7 +79,7 @@ class _TaskListInterface extends State<TaskListInterface> {
   }
 
   void selectTask(int index) {
-    int id = _tasks[index].id;
+    String id = _tasks[index].id;
 
     if(widget.selectedTask.value?.id == _tasks[index].id ||
         widget.selectedTask.value != null){

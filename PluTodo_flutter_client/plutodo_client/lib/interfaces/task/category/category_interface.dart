@@ -14,7 +14,7 @@ class CategoryInterface extends StatefulWidget {
   CategoryInterface({super.key}) {}
   final TaskService _taskService = getIt<TaskService>();
 
-  final ValueNotifier<int> selectedCategoryId = ValueNotifier<int>(-1);
+  final ValueNotifier<String> selectedCategoryId = ValueNotifier<String>("");
 
   @override
   State<CategoryInterface> createState() => _CategoyInterface();
@@ -25,7 +25,7 @@ class _CategoyInterface extends State<CategoryInterface> {
   Category? selectedCategory;
 
   void _selectCategory(int index) {
-    int id = _categories[index].id!;
+    String id = _categories[index].id!;
     selectedCategory = _categories[index];
 
     _categories.forEach((element) {
@@ -70,12 +70,12 @@ class _CategoyInterface extends State<CategoryInterface> {
 
   void _deleteSelectedCategory() async {
     try{
-      await widget._taskService.deleteCategory(selectedCategory!.id);
+      await widget._taskService.deleteCategory(selectedCategory!.id!);
 
       _categories.removeWhere((element) => element.id == selectedCategory!.id);
 
       selectedCategory = null;
-      widget.selectedCategoryId.value = -1;
+      widget.selectedCategoryId.value = "";
 
       setState(() {
         _categories;
@@ -89,9 +89,9 @@ class _CategoyInterface extends State<CategoryInterface> {
   
   void _addBasicCategoriesToList() {
     _categories = [
-      Category.init(-3, "All tasks", -3),
+      Category.init("-3", "All tasks", "-3"),
       //Category.init(-2, "All tasks by date", -2),
-      Category.init(-1, "Finished tasks", -1)
+      Category.init("-1", "Finished tasks", "-1")
     ];
   }
 
@@ -110,11 +110,11 @@ class _CategoyInterface extends State<CategoryInterface> {
         builder: (BuildContext context) =>
             CategoryDialog(
               category: category ?? selectedCategory,
-              ordering: selectedCategory!.ordering,
+              color: selectedCategory!.color,
             )
     ).then((value) {
       if(value != "Cancel" && value != "Delete") {
-        _handleModifiedCategory(json.decode(value!), true);
+        _handleModifiedCategory(json.decode(value!), false);
       }
       else if(value == "Delete") {
         _deleteSelectedCategory();
@@ -155,7 +155,7 @@ class _CategoyInterface extends State<CategoryInterface> {
                       onPressed: () => showDialog<String>(
                           context: context,
                           builder: (BuildContext context) =>
-                              CategoryDialog(ordering: _categories.length + 1,)
+                              CategoryDialog(color: "",)
                       ).then((value) {
                         if(value != "Cancel") {
                           _handleModifiedCategory(json.decode(value!), true);
@@ -172,7 +172,7 @@ class _CategoyInterface extends State<CategoryInterface> {
                     if(!widget._taskService.isMobile(context))
                       TextButton(
                         onPressed: selectedCategory != null &&
-                            selectedCategory!.id >= 0 ?
+                          (selectedCategory!.id != "-1" || selectedCategory!.id != "-3") ?
                         () => _editCategory(null) : null,
                         child: const Text(
                           "Edit selected\ncategory",

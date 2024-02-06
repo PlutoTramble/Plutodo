@@ -6,7 +6,7 @@ import 'package:plutodo_client/models/task.dart';
 import 'package:plutodo_client/services/http/dio_fetcher.dart';
 
 class HttpService {
-  static const String _url = "http://localhost:5170";
+  static const String _url = "http://localhost:8080";
   //static const String _url = "http://10.0.2.2:5170";
   static const Map<String, dynamic> _header = {
     "Accept": "application/json",
@@ -18,7 +18,7 @@ class HttpService {
   Future<void> login(LoginDto login) async {
     try{
       await dio.post(
-        '$_url/api/users/login',
+        '$_url/Authentication/login',
         data: login.toJson(),
         options: Options(headers: _header)
       );
@@ -31,7 +31,7 @@ class HttpService {
   Future<void> register(RegisterDto register) async {
     try{
       await dio.post(
-          '$_url/api/users/register',
+          '$_url/Authentication/register',
           data: register.toJson(),
           options: Options(headers: _header)
       );
@@ -44,7 +44,7 @@ class HttpService {
   Future<List<Category>> fetchAllCategories() async {
     try {
       var response = await dio.get(
-        '$_url/api/Categories/GetAll',
+        '$_url/api/Category/getFromUser',
         options: Options(headers: _header)
       );
 
@@ -60,7 +60,7 @@ class HttpService {
   Future<Category> sendNewCategory(Category category) async {
     try{
       var response = await dio.post(
-          '$_url/api/Categories/New',
+          '$_url/api/Category/add',
           data: category,
           options: Options(headers: _header)
       );
@@ -75,7 +75,7 @@ class HttpService {
   Future<Category> sendModifiedCategory(Category category) async {
     try{
       var response = await dio.put(
-          '$_url/api/Categories/Edit/${category.id}',
+          '$_url/api/Category/edit',
           data: category,
           options: Options(headers: _header)
       );
@@ -87,10 +87,10 @@ class HttpService {
     }
   }
 
-  Future<void> removeCategory(int id) async {
+  Future<void> removeCategory(String id) async {
     try{
       await dio.delete(
-          '$_url/api/Categories/Delete/$id',
+          '$_url/api/Category/delete?id=$id',
           options: Options(headers: _header)
       );
     }
@@ -99,10 +99,10 @@ class HttpService {
     }
   }
 
-  Future<List<Task>> fetchTasksFromCategoryId(int id) async {
+  Future<List<Task>> fetchTasksFromCategoryId(String id) async {
     try {
       var response = await dio.get(
-          '$_url/api/Todos/GetFromCategory/$id',
+          '$_url/api/Task/getTasksFromCategory?id=$id',
           options: Options(headers: _header)
       );
 
@@ -118,7 +118,7 @@ class HttpService {
   Future<List<Task>> fetchAllTasks() async {
     try {
       var response = await dio.get(
-          '$_url/api/Todos/GetAll',
+          '$_url/api/Task/getAll',
           options: Options(headers: _header)
       );
 
@@ -131,10 +131,10 @@ class HttpService {
     }
   }
 
-  Future<Task> sendNewTask(Task task, int categoryId) async {
+  Future<Task> sendNewTask(Task task) async {
     try{
       var response = await dio.post(
-          '$_url/api/Todos/New/$categoryId',
+          '$_url/api/Task/add',
           data: task,
           options: Options(headers: _header)
       );
@@ -149,7 +149,7 @@ class HttpService {
   Future<Task> sendModifiedTask(Task task) async {
     try{
       var response = await dio.put(
-          '$_url/api/Todos/Edit/${task.id}',
+          '$_url/api/Task/edit',
           data: task,
           options: Options(headers: _header)
       );
@@ -161,10 +161,10 @@ class HttpService {
     }
   }
 
-  Future<void> removeTask(int id) async {
+  Future<void> removeTask(String id) async {
     try{
       await dio.delete(
-          '$_url/api/Todos/Delete/$id',
+          '$_url/api/Task/delete?id=$id',
           options: Options(headers: _header)
       );
     }

@@ -4,10 +4,10 @@ part 'register_dto.g.dart';
 
 @JsonSerializable()
 class RegisterDto {
-  RegisterDto(this.username, this.email, this.password, this.passwordConfirm);
+  RegisterDto(this.username, this.emailAddress, this.password, this.passwordConfirm);
 
   final String username;
-  final String email;
+  final String emailAddress;
   final String password;
   final String passwordConfirm;
 
