@@ -25,8 +25,15 @@ public class TaskItemController {
 
     @Async
     @GetMapping(value = "/getTasksFromCategory")
-    public CompletableFuture<ResponseEntity<List<TaskItemDTO>>> getTasksFromCategoru(@RequestParam UUID categoryId, Principal principal) throws ExecutionException, InterruptedException {
-        List<TaskItemDTO> tasks = taskItemService.taskItemsByCategory(categoryId, principal.getName()).get();
+    public CompletableFuture<ResponseEntity<List<TaskItemDTO>>> getTasksFromCategoru(@RequestParam UUID id, Principal principal) throws ExecutionException, InterruptedException {
+        List<TaskItemDTO> tasks = taskItemService.taskItemsByCategory(id, principal.getName()).get();
+        return CompletableFuture.completedFuture(new ResponseEntity<>(tasks, HttpStatus.OK));
+    }
+
+    @Async
+    @GetMapping(value = "/getAll")
+    public CompletableFuture<ResponseEntity<List<TaskItemDTO>>> getAll(Principal principal) throws ExecutionException, InterruptedException {
+        List<TaskItemDTO> tasks = taskItemService.allTasks(principal.getName()).get();
         return CompletableFuture.completedFuture(new ResponseEntity<>(tasks, HttpStatus.OK));
     }
 
@@ -60,8 +67,8 @@ public class TaskItemController {
 
     @Async
     @DeleteMapping(value = "/delete")
-    public CompletableFuture<ResponseEntity<Object>> delete(@RequestBody TaskItemDTO taskItemDTO, Principal principal) throws ExecutionException, InterruptedException, ItemNotFoundException {
-        taskItemService.deleteTask(taskItemDTO.id, principal.getName());
+    public CompletableFuture<ResponseEntity<Object>> delete(@RequestParam UUID id, Principal principal) throws ExecutionException, InterruptedException, ItemNotFoundException {
+        taskItemService.deleteTask(id, principal.getName());
         return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.OK));
     }
 }

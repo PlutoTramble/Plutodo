@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -45,8 +46,8 @@ public class CategoryController {
 
     @Async
     @DeleteMapping(value = "/delete")
-    public CompletableFuture<ResponseEntity<Object>> delete(@RequestBody CategoryDTO categoryDTO, Principal principal) throws ExecutionException, InterruptedException, ItemNotFoundException {
-        categoryService.deleteCategory(principal.getName(), categoryDTO.id);
+    public CompletableFuture<ResponseEntity<Object>> delete(@RequestParam UUID id, Principal principal) throws ExecutionException, InterruptedException, ItemNotFoundException {
+        categoryService.deleteCategory(principal.getName(), id);
         return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.OK));
     }
 }

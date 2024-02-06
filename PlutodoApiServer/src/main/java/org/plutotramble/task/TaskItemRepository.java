@@ -15,4 +15,7 @@ public interface TaskItemRepository extends CrudRepository<TaskItemEntity, Objec
 
     @Async
     CompletableFuture<TaskItemEntity> getTaskItemEntityByIdAndCategory_UserAccount_Id(UUID id, UUID userAccount_id);
+
+    @Async
+    CompletableFuture<List<TaskItemEntity>> getTaskItemEntitiesByCategory_UserAccount_Id(UUID userAccount_id);
 }

@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping(value = "/api/Authentication")
+@RequestMapping(value = "/Authentication")
 public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;

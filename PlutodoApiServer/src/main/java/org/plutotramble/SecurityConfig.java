@@ -30,7 +30,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-           // .cors(cors -> cors.configurationSource(apiConfigurationSource()))
+            //.cors(cors -> cors.configurationSource(apiConfigurationSource()))
             .cors(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((authorize) -> authorize
                     .requestMatchers("/Authentication/**").permitAll()
@@ -48,7 +48,7 @@ public class SecurityConfig {
 
     CorsConfigurationSource apiConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost", "http://127.0.0.1", "http://localhost:57093"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost", "http://127.0.0.1", "http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST"));

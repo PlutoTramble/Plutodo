@@ -75,6 +75,17 @@ public class TaskItemService {
     }
 
     @Async
+    public CompletableFuture<List<TaskItemDTO>> allTasks(String username) throws ExecutionException, InterruptedException {
+        UUID userId = getUserUUIDByName(username).get();
+
+        List<TaskItemEntity> tasks = taskItemRepository.getTaskItemEntitiesByCategory_UserAccount_Id(userId).get();
+
+        List<TaskItemDTO> taskItemDTOS = tasks.stream().map(this::convertFromEntity).toList();
+
+        return CompletableFuture.completedFuture(taskItemDTOS);
+    }
+
+    @Async
     public CompletableFuture<TaskItemDTO> createNewTask(TaskItemDTO taskReceived, String username) throws InvalidItemPropertyException, ExecutionException, InterruptedException, ItemNotFoundException {
         UUID userId = getUserUUIDByName(username).get();
 
