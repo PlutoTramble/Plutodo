@@ -91,7 +91,7 @@ VALUES (OLD.name, 'calendar_event', row_to_json(OLD), OLD.date_created);
 RETURN OLD;
 END; $$;
 
-CREATE OR REPLACE TRIGGER calendar_event_delete
+CREATE TRIGGER calendar_event_delete
     BEFORE DELETE
     ON calendar_event
     FOR EACH ROW
@@ -110,7 +110,7 @@ VALUES (OLD.name, 'task_item', row_to_json(OLD), OLD.date_created);
 RETURN OLD;
 END; $$;
 
-CREATE OR REPLACE TRIGGER task_item_delete
+CREATE TRIGGER task_item_delete
     BEFORE DELETE
     ON task_item
     FOR EACH ROW
@@ -135,7 +135,7 @@ VALUES (OLD.name, 'category', row_to_json(OLD), OLD.date_created);
 RETURN OLD;
 END; $$;
 
-CREATE OR REPLACE TRIGGER category_delete
+CREATE TRIGGER category_delete
     BEFORE DELETE
     ON category
     FOR EACH ROW
@@ -157,7 +157,7 @@ VALUES (OLD.name, 'user_account', row_to_json(OLD), OLD.date_created);
 RETURN OLD;
 END; $$;
 
-CREATE OR REPLACE TRIGGER user_account_delete
+CREATE TRIGGER user_account_delete
     AFTER DELETE
     ON user_account
     FOR EACH ROW
