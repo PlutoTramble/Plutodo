@@ -26,13 +26,8 @@ class _RegisterInterface extends State<RegisterInterface> {
         passwordController.value.text,
         passwordConfirmController.value.text);
 
-    try {
-      await widget._authenticationService.signUp(userInformation);
-
+    if(await widget._authenticationService.signUp(userInformation, context)) {
       popAndGo('/Plutodo');
-    }
-    catch(e) {
-      print(e);
     }
   }
 

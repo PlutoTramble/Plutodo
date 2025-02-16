@@ -1,56 +1,59 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:plutodo_client/injection.dart';
 import 'package:plutodo_client/models/authentication/login_dto.dart';
 import 'package:plutodo_client/models/authentication/register_dto.dart';
+import 'package:plutodo_client/services/general_service.dart';
 import 'package:plutodo_client/services/http/error_message.dart';
 import 'package:plutodo_client/services/http/http_service.dart';
 import 'package:plutodo_client/services/user_singleton.dart';
 
-class AuthenticationService {
+class AuthenticationService extends GeneralService {
   final _httpService = getIt<HttpService>();
 
-  Future<void> signUp(RegisterDto register) async {
-    if(register.password != register.passwordConfirm){
-      throw "The password is the same";
+  Future<bool> signUp(RegisterDto register, BuildContext context) async {
+    if(register.password != register.passwordConfirm && context.mounted){
+      showSnackBarError("The password is not the same.", context);
+      return false;
     }
 
     try {
       await _httpService.register(register);
-
       User().username = register.username;
+      return true;
     }
     on DioException catch(e) {
-      throw errorHandling(
-          ErrorMessage.fromJson(e.response?.data).error
-      );
+      if (context.mounted) {
+        showSnackBarError('HTTP Error ${e.response?.statusCode.toString()} : ${ErrorMessage.fromJson(e.response?.data).error}', context);
+      }
     }
     catch(e){
-      rethrow;
+      if (context.mounted) {
+        showSnackBarError('Error : ${e.toString()}', context);
+      }
     }
+
+    return false;
   }
 
-  Future<void> logInUser(LoginDto login) async {
+  Future<bool> logInUser(LoginDto login, BuildContext context) async {
     try {
       await _httpService.login(login);
 
       User().username = login.username;
+
+      return true;
     }
     on DioException catch(e) {
-      throw errorHandling(
-          ErrorMessage.fromJson(e.response?.data).error
-      );
+      if (context.mounted) {
+        showSnackBarError('HTTP Error ${e.response?.statusCode.toString()} : ${ErrorMessage.fromJson(e.response?.data).error}', context);
+      }
     }
     catch(e){
-      rethrow;
+      if (context.mounted) {
+        showSnackBarError('Error : ${e.toString()}', context);
+      }
     }
-  }
-
-  String errorHandling(String message) {
-    switch(message){
-      case "IncorrectUsernameOrPassword":
-        return "Incorrect Username or password";
-      default:
-        return "Unknown error occured.";
-    }
+    return false;
   }
 }

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:plutodo_client/injection.dart';
 import 'package:plutodo_client/models/authentication/login_dto.dart';
@@ -23,25 +22,9 @@ class _LoginInterface extends State<LoginInterface> {
         usernameController.value.text,
         passwordController.value.text);
 
-    try{
-      await widget._authenticationService.logInUser(userInformation);
-
+    if (await widget._authenticationService.logInUser(userInformation, context)){
       _popAndGo('/Plutodo');
     }
-    on DioException catch(e){
-      showMessage(e.toString());
-    }
-    catch(e){
-      showMessage(e.toString());
-    }
-  }
-  
-  void showMessage(String message){
-    SnackBar snackBar = SnackBar(
-        content: Text(message)
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
   
   void _popAndGo(String route) {
