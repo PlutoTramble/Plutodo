@@ -1,6 +1,7 @@
 package org.plutotramble.controller;
 
 import jakarta.annotation.security.PermitAll;
+import org.plutotramble.dto.ErrorMessageDTO;
 import org.plutotramble.dto.LoginDTO;
 import org.plutotramble.dto.RegisterDTO;
 import org.plutotramble.service.AuthenticationService;
@@ -34,6 +35,12 @@ public class AuthenticationController {
     public CompletableFuture<ResponseEntity<Object>> login(@RequestBody LoginDTO loginDTO){
         UsernamePasswordAuthenticationToken authReq
                 = new UsernamePasswordAuthenticationToken(loginDTO.username, loginDTO.password);
+
+        if(!authReq.isAuthenticated()) {
+            ErrorMessageDTO errorMessage = new ErrorMessageDTO("Invalid username or password.");
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage));
+        }
+
         Authentication auth = authenticationManager.authenticate(authReq);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -43,8 +50,14 @@ public class AuthenticationController {
     @Async
     @PermitAll
     @PostMapping(value = "/register")
-    public CompletableFuture<ResponseEntity<Object>> Register(@RequestBody RegisterDTO registerDTO) throws ExecutionException, InterruptedException {
-        authenticationService.CreateUser(registerDTO);
+    public CompletableFuture<ResponseEntity<Object>> register(@RequestBody RegisterDTO registerDTO) throws ExecutionException, InterruptedException {
+        try {
+            authenticationService.CreateUser(registerDTO);
+        }
+        catch (Exception e) {
+            ErrorMessageDTO errorMessage = new ErrorMessageDTO(e.getMessage());
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage));
+        }
 
         LoginDTO loginDTO = new LoginDTO();
         loginDTO.username = registerDTO.username;
