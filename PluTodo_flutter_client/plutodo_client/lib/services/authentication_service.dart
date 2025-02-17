@@ -13,7 +13,7 @@ class AuthenticationService extends GeneralService {
 
   Future<bool> signUp(RegisterDto register, BuildContext context) async {
     if(register.password != register.passwordConfirm && context.mounted){
-      showSnackBarError("The password is not the same.", context);
+      showSnackBarError("The passwords must be identical.", context);
       return false;
     }
 
