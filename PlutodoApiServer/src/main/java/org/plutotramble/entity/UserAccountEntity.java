@@ -3,9 +3,7 @@ package org.plutotramble.entity;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "user_account", schema = "public", catalog = "javadevplutodo")
@@ -37,6 +35,29 @@ public class UserAccountEntity {
     private Timestamp dateLastLogin;
     @OneToMany(mappedBy = "userAccount")
     private Collection<CategoryEntity> categories;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nextcloud_user_id")
+    private NextcloudUserInfoEntity nextcloudUser;
+
+    @OneToMany(mappedBy = "userAccount")
+    private Set<NextcloudUserInfoEntity> nextcloudUserInfoEntities = new LinkedHashSet<>();
+
+    public Set<NextcloudUserInfoEntity> getNextcloudUserInfos() {
+        return nextcloudUserInfoEntities;
+    }
+
+    public void setNextcloudUserInfos(Set<NextcloudUserInfoEntity> nextcloudUserInfoEntities) {
+        this.nextcloudUserInfoEntities = nextcloudUserInfoEntities;
+    }
+
+    public NextcloudUserInfoEntity getNextcloudUser() {
+        return nextcloudUser;
+    }
+
+    public void setNextcloudUser(NextcloudUserInfoEntity nextcloudUser) {
+        this.nextcloudUser = nextcloudUser;
+    }
 
     public UUID getId() {
         return id;
